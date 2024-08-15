@@ -17,15 +17,18 @@ import { Link } from "react-router-dom";
 const SideBar = () => {
   const [isDepartmentOpen, setDepartmentOpen] = useState(false);
   const [isLeaveTypeOpen, setLeaveTypeOpen] = useState(false);
+  const [isEmployeeOpen, setEmployeeOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleDepartment = () => {
     if (isSidebarOpen) {
       setDepartmentOpen(!isDepartmentOpen);
       setLeaveTypeOpen(false);
+      setEmployeeOpen(false);
     } else {
       setSidebarOpen(true);
       setLeaveTypeOpen(false);
+      setEmployeeOpen(false);
     }
   };
 
@@ -33,9 +36,23 @@ const SideBar = () => {
     if (isSidebarOpen) {
       setLeaveTypeOpen(!isLeaveTypeOpen);
       setDepartmentOpen(false);
+      setEmployeeOpen(false);
     } else {
       setSidebarOpen(true);
       setDepartmentOpen(false);
+      setEmployeeOpen(false);
+    }
+  };
+
+  const toggleEmployee = () => {
+    if (isSidebarOpen) {
+      setEmployeeOpen(!isEmployeeOpen);
+      setDepartmentOpen(false);
+      setLeaveTypeOpen(false);
+    } else {
+      setSidebarOpen(true);
+      setDepartmentOpen(false);
+      setLeaveTypeOpen(false);
     }
   };
 
@@ -43,8 +60,8 @@ const SideBar = () => {
     setSidebarOpen(!isSidebarOpen);
     setDepartmentOpen(false);
     setLeaveTypeOpen(false);
+    setEmployeeOpen(false);
   };
-
   return (
     <SideNavWrapper isOpen={isSidebarOpen}>
       <div className="top-section">
@@ -90,10 +107,10 @@ const SideBar = () => {
         {isDepartmentOpen && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem>
-              <span>Sub Department 1</span>
+              <span>Add Department</span>
             </SubMenuItem>
             <SubMenuItem>
-              <span>Sub Department 2</span>
+              <span>Department List</span>
             </SubMenuItem>
           </SubMenu>
         )}
@@ -115,21 +132,35 @@ const SideBar = () => {
         {isLeaveTypeOpen && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem>
-              <span>Sub Leave Type 1</span>
+              <span>Add Leave Type </span>
             </SubMenuItem>
             <SubMenuItem>
-              <span>Sub Leave Type 2</span>
+              <span>Leave Type List</span>
             </SubMenuItem>
           </SubMenu>
         )}
-        <MenuItem isOpen={isSidebarOpen} onClick={toggleDepartment}>
+        <MenuItem onClick={toggleEmployee} isOpen={isSidebarOpen}>
           <div className="menu-content">
             <Tooltip title="Employee" placement="top">
               <img src={Employee} alt="employee-icon" className="menu-icons" />
             </Tooltip>
             {isSidebarOpen && <span>Employee</span>}
           </div>
+          {isSidebarOpen && (
+            <>{isEmployeeOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}</>
+          )}
         </MenuItem>
+        {isEmployeeOpen && isSidebarOpen && (
+          <SubMenu>
+            <SubMenuItem>
+              <span>Add Employee</span>
+            </SubMenuItem>
+            <SubMenuItem>
+              <span>Employee List</span>
+            </SubMenuItem>
+          </SubMenu>
+        )}
+  
         <MenuItem isOpen={isSidebarOpen} onClick={toggleDepartment}>
           <div className="menu-content">
             <Tooltip title="Leave" placement="top">

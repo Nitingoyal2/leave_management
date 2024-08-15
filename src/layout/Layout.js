@@ -29,7 +29,7 @@ const LayoutWrapper = styled.div`
   font-family: "Poppins", sans-serif;
   position: relative;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 const SideNavWrapper = styled.div`

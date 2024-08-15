@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
 
 const Dashboard = () => {
   return (
@@ -7,20 +8,24 @@ const Dashboard = () => {
       <Title>Dashboard</Title>
       <MetricsContainer>
         <Metric>
-          <MetricTitle>Total Leave</MetricTitle>
+          <MetricImage src={TotalLeave} alt="Total Leave" />
           <MetricValue>123</MetricValue>
+          <MetricTitle>Total Leave</MetricTitle>
         </Metric>
         <Metric>
-          <MetricTitle>Rejected</MetricTitle>
+          <MetricImage src={Rejected} alt="Rejected" />
           <MetricValue>45</MetricValue>
+          <MetricTitle>Rejected Leave</MetricTitle>
         </Metric>
         <Metric>
-          <MetricTitle>Approved</MetricTitle>
+          <MetricImage src={Approve} alt="Approved" />
           <MetricValue>67</MetricValue>
+          <MetricTitle>Approved Leave</MetricTitle>
         </Metric>
         <Metric>
-          <MetricTitle>Pending</MetricTitle>
+          <MetricImage src={Pending} alt="Pending" />
           <MetricValue>12</MetricValue>
+          <MetricTitle>Pending Leave</MetricTitle>
         </Metric>
       </MetricsContainer>
     </DashboardWrapper>
@@ -36,7 +41,7 @@ const DashboardWrapper = styled.div`
   }
 
   ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
+    background: #f1f1f1;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -45,7 +50,7 @@ const DashboardWrapper = styled.div`
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; /
+    background: #555;
   }
 
   padding: 20px;
@@ -79,13 +84,19 @@ const Metric = styled.div`
 
 const MetricTitle = styled.div`
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   color: #555;
-  margin-bottom: 10px;
+  margin: 10px 0px;
 `;
 
 const MetricValue = styled.div`
   font-size: 24px;
   font-weight: bold;
   color: #333;
+`;
+
+const MetricImage = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
 `;
