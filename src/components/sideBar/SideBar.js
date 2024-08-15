@@ -9,15 +9,24 @@ import {
   Employee,
   Next,
   Back,
+  DepartmentAdd,
+  DepartmentList,
+  LeaveTypeAdd,
+  LeaveTypeList,
+  EmployeeAdd,
+  EmployeeList,
+  leaveList,
 } from "../../Utils/images";
 import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SideBar = () => {
+  const navigate = useNavigate();
   const [isDepartmentOpen, setDepartmentOpen] = useState(false);
   const [isLeaveTypeOpen, setLeaveTypeOpen] = useState(false);
   const [isEmployeeOpen, setEmployeeOpen] = useState(false);
+  const [isLeaveOpen, setLeaveOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleDepartment = () => {
@@ -56,11 +65,46 @@ const SideBar = () => {
     }
   };
 
+  const toggleLeave = () => {
+    if (isSidebarOpen) {
+      setLeaveOpen(!isLeaveOpen);
+      setDepartmentOpen(false);
+      setLeaveTypeOpen(false);
+      setEmployeeOpen(false); // Close other menus
+    } else {
+      setSidebarOpen(true);
+      setDepartmentOpen(false);
+      setLeaveTypeOpen(false);
+      setEmployeeOpen(false); // Close other menus
+    }
+  };
+
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
     setDepartmentOpen(false);
     setLeaveTypeOpen(false);
     setEmployeeOpen(false);
+    setLeaveOpen(false);
+  };
+
+  const handleAddDepartment = () => {
+    navigate("/departmentAdd");
+  };
+
+  const toggleDepartmentList = () => {
+    navigate("/departmentList");
+  };
+
+  const handleAddLeaveType = () => {
+    navigate("/leaveTypeAdd");
+  };
+
+  const handleLeaveTypeList = () => {
+    navigate("/leaveTypeList");
+  }
+
+  const handleAddEmployee = () => {
+    navigate("/employeeAdd");
   };
   return (
     <SideNavWrapper isOpen={isSidebarOpen}>
@@ -107,10 +151,20 @@ const SideBar = () => {
         {isDepartmentOpen && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem>
-              <span>Add Department</span>
+              <img
+                src={DepartmentAdd}
+                alt="department-add"
+                className="menu-icons"
+              />
+              <span onClick={handleAddDepartment}>Add Department</span>
             </SubMenuItem>
             <SubMenuItem>
-              <span>Department List</span>
+              <img
+                src={DepartmentList}
+                alt="department-add"
+                className="menu-icons"
+              />
+              <span onClick={toggleDepartmentList}>Department List</span>
             </SubMenuItem>
           </SubMenu>
         )}
@@ -132,10 +186,20 @@ const SideBar = () => {
         {isLeaveTypeOpen && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem>
-              <span>Add Leave Type </span>
+              <img
+                src={LeaveTypeAdd}
+                alt="leave-type-icon"
+                className="menu-icons"
+              />
+              <span onClick={handleAddLeaveType}>Add Leave Type </span>
             </SubMenuItem>
             <SubMenuItem>
-              <span>Leave Type List</span>
+              <img
+                src={LeaveTypeList}
+                alt="leave-type-icon"
+                className="menu-icons"
+              />
+              <span onClick={handleLeaveTypeList}>Leave Type List</span>
             </SubMenuItem>
           </SubMenu>
         )}
@@ -153,22 +217,71 @@ const SideBar = () => {
         {isEmployeeOpen && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem>
-              <span>Add Employee</span>
+              <img
+                src={EmployeeAdd}
+                alt="leave-type-icon"
+                className="menu-icons"
+              />
+              <span onClick={handleAddEmployee}>Add Employee</span>
             </SubMenuItem>
             <SubMenuItem>
+              <img
+                src={EmployeeList}
+                alt="leave-type-icon"
+                className="menu-icons"
+              />
               <span>Employee List</span>
             </SubMenuItem>
           </SubMenu>
         )}
-  
-        <MenuItem isOpen={isSidebarOpen} onClick={toggleDepartment}>
+
+        <MenuItem onClick={toggleLeave} isOpen={isSidebarOpen}>
           <div className="menu-content">
             <Tooltip title="Leave" placement="top">
               <img src={Leave} alt="leave-icon" className="menu-icons" />
             </Tooltip>
             {isSidebarOpen && <span>Leave</span>}
           </div>
+          {isSidebarOpen && (
+            <>{isLeaveOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}</>
+          )}
         </MenuItem>
+        {isLeaveOpen && isSidebarOpen && (
+          <SubMenu>
+            <SubMenuItem>
+              <img
+                src={leaveList}
+                alt="leave-list-icon"
+                className="menu-icons"
+              />
+              <span>Leave List</span>
+            </SubMenuItem>
+            <SubMenuItem>
+              <img
+                src={leaveList}
+                alt="leave-pending-icon"
+                className="menu-icons"
+              />
+              <span>Leave Pending</span>
+            </SubMenuItem>
+            <SubMenuItem>
+              <img
+                src={leaveList}
+                alt="leave-approve-icon"
+                className="menu-icons"
+              />
+              <span>Leave Approve</span>
+            </SubMenuItem>
+            <SubMenuItem>
+              <img
+                src={leaveList}
+                alt="leave-rejected-icon"
+                className="menu-icons"
+              />
+              <span>Leave Rejected</span>
+            </SubMenuItem>
+          </SubMenu>
+        )}
       </div>
     </SideNavWrapper>
   );
@@ -239,14 +352,21 @@ const SubMenu = styled.div`
 const SubMenuItem = styled.div`
   display: flex;
   align-items: center;
-  margin: 4px 0;
+  margin: 8px 0;
   font-size: 14px;
 
   span {
-    margin: 5px 0px;
-    margin-left: 8px;
+    margin-left: 5px;
     font-size: 18px;
     font-weight: bold;
+  }
+  .menu-icons {
+    width: 30px;
+    height: 30px;
+    margin: 0px;
+    svg {
+      font-size: 16px;
+    }
   }
 `;
 

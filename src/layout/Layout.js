@@ -56,6 +56,6 @@ const HeaderWrapper = styled.div`
 `;
 
 const OutletWrapper = styled.div`
-  // height: calc(100vh - 60px);
+  height: calc(100vh - 100px);
   overflow: auto;
 `;

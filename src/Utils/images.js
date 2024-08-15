@@ -11,6 +11,15 @@ import Approve from "../assets/images/approve.png";
 import TotalLeave from "../assets/images/totalleave.png";
 import Rejected from "../assets/images/reject.png";
 import Pending from "../assets/images/pending.png";
+import DepartmentAdd from "../assets/images/departmentadd (2).png";
+import DepartmentList from "../assets/images/departmentlist.png";
+import LeaveTypeAdd from "../assets/images/leavetypeadd.png";
+import LeaveTypeList from "../assets/images/leavetypelist.png";
+import EmployeeAdd from "../assets/images/employeeAdd.png";
+import EmployeeList from "../assets/images/employeelist.png";
+import leaveList from "../assets/images/leavelist.png"
+import Edit from "../assets/images/edit.png";
+import Delete from "../assets/images/delete.png";
 
 export {
   AuthBacgroundImg,
@@ -26,4 +35,13 @@ export {
   TotalLeave,
   Rejected,
   Pending,
+  DepartmentAdd,
+  DepartmentList,
+  LeaveTypeAdd,
+  LeaveTypeList,
+  EmployeeAdd,
+  EmployeeList,
+  leaveList,
+  Edit,
+  Delete
 };
