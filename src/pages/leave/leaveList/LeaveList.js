@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Table, Input, Space, Button, Tooltip, Avatar } from "antd";
+import { Table, Input, Space, Avatar } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";

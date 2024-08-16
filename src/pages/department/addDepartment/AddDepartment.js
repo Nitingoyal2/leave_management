@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import the Quill styles
-import { CaretRightOutlined, RightOutlined } from "@ant-design/icons";
+import "react-quill/dist/quill.snow.css"; 
+import {  RightOutlined } from "@ant-design/icons";
 
 const CreateDepartment = () => {
-  // Validation schema using Yup
   const validationSchema = Yup.object({
     deptName: Yup.string()
       .max(50, "Department name must be 50 characters or less")
@@ -19,7 +18,6 @@ const CreateDepartment = () => {
     deptStatus: Yup.boolean(),
   });
 
-  // Initial form values
   const initialValues = {
     deptName: "",
     deptShortName: "",
@@ -27,7 +25,6 @@ const CreateDepartment = () => {
     deptStatus: false,
   };
 
-  // Form submission handler
   const onSubmit = (values) => {
     console.log("Form data", values);
   };
@@ -108,7 +105,6 @@ const CreateDepartment = () => {
 
 export default CreateDepartment;
 
-// Styled components
 
 const DepartmentWrapper = styled.div`
   padding: 20px;
