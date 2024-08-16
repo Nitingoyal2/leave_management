@@ -20,6 +20,7 @@ import EmployeeList from "../assets/images/employeelist.png";
 import leaveList from "../assets/images/leavelistt.png";
 import Edit from "../assets/images/edit.png";
 import Delete from "../assets/images/delete.png";
+import BackgroundImg from "../assets/images/BackgroundImg.png";
 
 export {
   AuthBacgroundImg,
@@ -44,4 +45,5 @@ export {
   leaveList,
   Edit,
   Delete,
+  BackgroundImg,
 };

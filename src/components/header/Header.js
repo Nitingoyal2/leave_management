@@ -1,14 +1,22 @@
 import React from "react";
 import styled from "styled-components";
-import { Dropdown,  Menu } from "antd";
+import { Dropdown, Menu } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
+import { authlogout } from "../../Store/Authentication";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(authlogout());
+    navigate("/");
+  };
   const menu = (
     <StyledMenu>
-      <Menu.Item key="0">
-        <a href="/">Logout</a>
+      <Menu.Item key="0" onClick={handleLogout}>
+        <span>Logout</span>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item key="1">
