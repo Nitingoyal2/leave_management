@@ -1,28 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Table, Input, Tooltip } from "antd";
+import { Table, Input, Space, Button, Tooltip, Avatar } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
 
-const LeaveTypeList = () => {
-  const [data, setData] = useState([
-    {
-      key: "1",
-      leaveTypeName: "Annual Leave",
-      leaveTypeDetails: "Paid time off for vacations",
-      createdOn: "2024-03-01",
-      leaveTypeStatus: true,
-    },
-    {
-      key: "2",
-      leaveTypeName: "Sick Leave",
-      leaveTypeDetails: "Leave granted for illness",
-      createdOn: "2024-04-01",
-      leaveTypeStatus: false,
-    },
-  ]);
-
+const EmployeeList = () => {
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -34,51 +17,99 @@ const LeaveTypeList = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const columns = [
+  const [data, setData] = useState([
     {
-      title: "Leave Type Name",
-      dataIndex: "leaveTypeName",
-      key: "leaveTypeName",
+      key: "1",
+      avatar: "https://via.placeholder.com/150",
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      mobile: "1234567890",
+      address: "123 Main St, Anytown, USA",
+      role: "Manager",
+      createdOn: "2024-01-01",
     },
     {
-      title: "Leave Type Details",
-      dataIndex: "leaveTypeDetails",
-      key: "leaveTypeDetails",
+      key: "2",
+      avatar: "https://via.placeholder.com/150",
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane.smith@example.com",
+      mobile: "0987654321",
+      address: "456 Elm St, Anytown, USA",
+      role: "Employee",
+      createdOn: "2024-02-01",
+    },
+  ]);
+
+  const columns = [
+    {
+      title: "Employee",
+      dataIndex: "employee",
+      key: "employee",
+      width: 250,
+      render: (_, record) => (
+        <Space>
+          <Avatar src={record.avatar} />
+          <div>
+            <div>
+              {record.firstName} {record.lastName}
+            </div>
+            <div style={{ color: "#888" }}>{record.email}</div>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: "Mobile",
+      dataIndex: "mobile",
+      key: "mobile",
+      width: 150,
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+      width: 200,
       render: (text) => (
         <Tooltip title={text}>
-          <LeaveTypeDetails>{text}</LeaveTypeDetails>
+          <EmployeeAddress>{text}</EmployeeAddress>
         </Tooltip>
       ),
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      width: 120,
     },
     {
       title: "Created On",
       dataIndex: "createdOn",
       key: "createdOn",
+      width: 150,
       render: (text) => formatDate(text),
-    },
-    {
-      title: "Leave Type Status",
-      dataIndex: "leaveTypeStatus",
-      key: "leaveTypeStatus",
-      render: (text, record) => (
-        <StatusTag isActive={record.leaveTypeStatus}>
-          {record.leaveTypeStatus ? "Active" : "Inactive"}
-        </StatusTag>
-      ),
     },
     {
       title: "Action",
       key: "action",
-      render: (text, record) => (
+      width: 100,
+      render: (_, record) => (
         <div className="actionDiv">
           <span>
-            <img src={Edit} alt="edit" className="action-icon" />
+            <img
+              src={Edit}
+              alt="edit"
+              className="action-icon"
+              aria-label="Edit"
+            />
           </span>
           <span>
             <img
               src={Delete}
               alt="delete"
               className="action-icon"
+              aria-label="Delete"
               onClick={() => handleDelete(record)}
             />
           </span>
@@ -90,8 +121,9 @@ const LeaveTypeList = () => {
   const handleSearch = (e) => {
     setSearchText(e.target.value.toLowerCase());
   };
+
   const filteredData = data.filter((item) =>
-    item.leaveTypeName.toLowerCase().includes(searchText)
+    `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchText)
   );
 
   const handleTableChange = (pagination) => {
@@ -115,21 +147,21 @@ const LeaveTypeList = () => {
   };
 
   return (
-    <LeaveTypeWrapper>
+    <EmployeeWrapper>
       <Header>
-        <Title>Leave Type List</Title>
+        <Title>Employee List</Title>
         <Breadcrumb>
           <BreadcrumbItem>Dashboard</BreadcrumbItem>
           <RightOutlined className="breadcrumb-icon" />
-          <BreadcrumbItem>Leave Type</BreadcrumbItem>
+          <BreadcrumbItem>Employee</BreadcrumbItem>
           <RightOutlined className="breadcrumb-icon" />
-          <BreadcrumbItem isLast>Leave Type List</BreadcrumbItem>
+          <BreadcrumbItem isLast>Employee List</BreadcrumbItem>
         </Breadcrumb>
       </Header>
       <SearchBar>
         <Input
           type="search"
-          placeholder="Search leave type"
+          placeholder="Search employee"
           onChange={handleSearch}
           style={{ width: 200 }}
         />
@@ -144,22 +176,22 @@ const LeaveTypeList = () => {
           pageSizeOptions: ["10", "20", "50"],
           showSizeChanger: true,
         }}
-        scroll={{ x: true, y: 500 }}
+        scroll={{ x: 500, y: 500 }}
         onChange={handleTableChange}
       />
       <DeleteModal
         visible={showDeleteModal}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
-        itemName={selectedItem?.leaveTypeName}
+        itemName={selectedItem?.firstName + " " + selectedItem?.lastName}
       />
-    </LeaveTypeWrapper>
+    </EmployeeWrapper>
   );
 };
 
-export default LeaveTypeList;
+export default EmployeeList;
 
-const LeaveTypeWrapper = styled.div`
+const EmployeeWrapper = styled.div`
   padding: 20px;
   .actionDiv {
     display: flex;
@@ -209,16 +241,7 @@ const SearchBar = styled.div`
   margin-bottom: 10px;
 `;
 
-const StatusTag = styled.span`
-  background-color: ${(props) => (props.isActive ? "#66bb6a" : "#ef5350")};
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  display: inline-block;
-  text-align: center;
-`;
-
-const LeaveTypeDetails = styled.span`
+const EmployeeAddress = styled.div`
   display: inline-block;
   max-width: 150px;
   white-space: nowrap;

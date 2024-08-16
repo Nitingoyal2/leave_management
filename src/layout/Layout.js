@@ -45,6 +45,7 @@ const MainWrapper = styled.div`
   background: rgba(20, 93, 160, 0.09);
   position: relative;
   transition: 0.4s ease-out;
+  width: calc(100% - 260px);
 `;
 
 const HeaderWrapper = styled.div`

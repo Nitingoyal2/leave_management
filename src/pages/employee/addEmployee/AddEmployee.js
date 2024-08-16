@@ -3,16 +3,13 @@ import styled from "styled-components";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Select, Button, Upload } from "antd";
-import { UploadOutlined, EditOutlined } from "@ant-design/icons";
+import { EditOutlined, RightOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import the Quill styles
-import { paste } from "@testing-library/user-event/dist/paste";
-import Password from "antd/es/input/Password";
+import "react-quill/dist/quill.snow.css";
 
 const { Option } = Select;
 
 const AddEmployee = () => {
-  // Validation schema using Yup
   const validationSchema = Yup.object({
     avatar: Yup.mixed().required("Avatar is required"),
     firstName: Yup.string()
@@ -34,7 +31,6 @@ const AddEmployee = () => {
     password: Yup.string().required("Password is required"),
   });
 
-  // Initial form values
   const initialValues = {
     avatar: null,
     firstName: "",
@@ -48,12 +44,10 @@ const AddEmployee = () => {
     password: "",
   };
 
-  // Form submission handler
   const onSubmit = (values) => {
-    console.log("Form data:", values); // Ensure this is logged in the console
+    console.log("Form data:", values);
   };
 
-  // Handle file change
   const handleFileChange = (file, setFieldValue) => {
     setFieldValue("avatar", file);
   };
@@ -62,6 +56,13 @@ const AddEmployee = () => {
     <EmployeeWrapper>
       <Header>
         <Title>Add Employee</Title>
+        <Breadcrumb>
+          <BreadcrumbItem>Dashboard</BreadcrumbItem>
+          <RightOutlined className="breadcrumb-icon" />
+          <BreadcrumbItem>Department</BreadcrumbItem>
+          <RightOutlined className="breadcrumb-icon" />
+          <BreadcrumbItem isLast>Add Employee</BreadcrumbItem>
+        </Breadcrumb>
       </Header>
       <Formik
         initialValues={initialValues}
@@ -70,7 +71,7 @@ const AddEmployee = () => {
       >
         {({ values, setFieldValue, handleSubmit }) => (
           <StyledForm onSubmit={handleSubmit}>
-            <FormGroup>
+            <FormGroup className="avatar-row">
               <Label>Avatar</Label>
               <AvatarWrapper>
                 {values.avatar ? (
@@ -215,6 +216,9 @@ const EmployeeWrapper = styled.div`
 `;
 
 const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 `;
 
@@ -222,6 +226,20 @@ const Title = styled.h1`
   font-size: 24px;
   font-weight: bold;
   color: #333;
+`;
+
+const Breadcrumb = styled.div`
+  font-size: 18px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  .breadcrumb-icon {
+    font-size: 10px;
+  }
+`;
+const BreadcrumbItem = styled.span`
+  color: ${(props) => (props.isLast ? "#888" : "#2c7aba7d")};
 `;
 
 const StyledForm = styled(Form)`

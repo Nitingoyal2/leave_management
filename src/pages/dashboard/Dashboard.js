@@ -1,8 +1,146 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
+import { Employee } from "../../Utils/images";
+import { Select } from "antd"; // Import Ant Design Select component
+
+const { Option } = Select;
 
 const Dashboard = () => {
+  const [selectedRole, setSelectedRole] = useState("All");
+
+  const staffList = [
+    {
+      name: "Staff Member 1",
+      email: "staff1@example.com",
+      role: "Web",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 2",
+      email: "staff2@example.com",
+      role: "Web",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 3",
+      email: "staff3@example.com",
+      role: "Web",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 4",
+      email: "staff4@example.com",
+      role: "Web",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 5",
+      email: "staff5@example.com",
+      role: "Web",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 6",
+      email: "staff6@example.com",
+      role: "Backend",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 7",
+      email: "staff7@example.com",
+      role: "Backend",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 8",
+      email: "staff8@example.com",
+      role: "Backend",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 9",
+      email: "staff9@example.com",
+      role: "Backend",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 10",
+      email: "staff10@example.com",
+      role: "Backend",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 11",
+      email: "staff11@example.com",
+      role: "Python",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 12",
+      email: "staff12@example.com",
+      role: "Python",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 13",
+      email: "staff13@example.com",
+      role: "Python",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 14",
+      email: "staff14@example.com",
+      role: "Python",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 15",
+      email: "staff15@example.com",
+      role: "Python",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 16",
+      email: "staff16@example.com",
+      role: "iOS",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 17",
+      email: "staff17@example.com",
+      role: "iOS",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 18",
+      email: "staff18@example.com",
+      role: "iOS",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 19",
+      email: "staff19@example.com",
+      role: "iOS",
+      avatar: Employee,
+    },
+    {
+      name: "Staff Member 20",
+      email: "staff20@example.com",
+      role: "iOS",
+      avatar: Employee,
+    },
+  ];
+
+  const handleRoleChange = (value) => {
+    setSelectedRole(value);
+  };
+
+  const filteredStaffList =
+    selectedRole === "All"
+      ? staffList
+      : staffList.filter((staff) => staff.role === selectedRole);
+
   return (
     <DashboardWrapper>
       <Title>Dashboard</Title>
@@ -28,8 +166,43 @@ const Dashboard = () => {
           <MetricTitle>Pending Leave</MetricTitle>
         </Metric>
       </MetricsContainer>
+      <TeamSection>
+        <TeamTitle>Team Overview</TeamTitle>
+        <StaffSection>
+          <div className="staff-header">
+            <StaffTitle>Staff List</StaffTitle>
+            <FilterDropdown onChange={handleRoleChange} />
+          </div>
+          <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
+        </StaffSection>
+      </TeamSection>
     </DashboardWrapper>
   );
+};
+
+const FilterDropdown = ({ onChange }) => {
+  return (
+    <Select defaultValue="All" style={{ width: 200 }} onChange={onChange}>
+      <Option value="All">All Roles</Option>
+      <Option value="Web">Web</Option>
+      <Option value="Backend">Backend</Option>
+      <Option value="Python">Python</Option>
+      <Option value="iOS">iOS</Option>
+    </Select>
+  );
+};
+
+const generateStaffList = (staffList) => {
+  return staffList.map((staff, index) => (
+    <StaffItem key={`staff-${index}`}>
+      <Avatar src={staff.avatar} alt={`Staff ${index + 1}`} />
+      <StaffDetails>
+        <StaffName>{staff.name}</StaffName>
+        <StaffEmail>{staff.email}</StaffEmail>
+      </StaffDetails>
+      <StaffRole>{staff.role}</StaffRole>
+    </StaffItem>
+  ));
 };
 
 export default Dashboard;
@@ -54,6 +227,11 @@ const DashboardWrapper = styled.div`
   }
 
   padding: 20px;
+  .staff-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const Title = styled.h1`
@@ -99,4 +277,71 @@ const MetricImage = styled.img`
   width: 40px;
   height: 40px;
   margin-bottom: 10px;
+`;
+
+const TeamSection = styled.div`
+  margin-top: 30px;
+`;
+
+const TeamTitle = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+`;
+
+const StaffSection = styled.div`
+  margin-top: 10px;
+`;
+
+const StaffTitle = styled.h3`
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+`;
+
+const StaffList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+const StaffItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const Avatar = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+`;
+
+const StaffDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0px 20px;
+`;
+
+const StaffName = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+`;
+
+const StaffEmail = styled.div`
+  font-size: 14px;
+  color: #555;
+`;
+
+const StaffRole = styled.div`
+  font-size: 14px;
+  color: #777;
 `;

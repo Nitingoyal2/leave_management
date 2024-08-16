@@ -1,28 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Table, Input, Tooltip } from "antd";
+import { Table, Input, Space, Button, Tooltip, Avatar } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
 
-const LeaveTypeList = () => {
-  const [data, setData] = useState([
-    {
-      key: "1",
-      leaveTypeName: "Annual Leave",
-      leaveTypeDetails: "Paid time off for vacations",
-      createdOn: "2024-03-01",
-      leaveTypeStatus: true,
-    },
-    {
-      key: "2",
-      leaveTypeName: "Sick Leave",
-      leaveTypeDetails: "Leave granted for illness",
-      createdOn: "2024-04-01",
-      leaveTypeStatus: false,
-    },
-  ]);
-
+const LeaveRejected = () => {
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -34,42 +17,91 @@ const LeaveTypeList = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const columns = [
+  const [data, setData] = useState([
     {
-      title: "Leave Type Name",
-      dataIndex: "leaveTypeName",
-      key: "leaveTypeName",
+      key: "1",
+      avatar: "https://via.placeholder.com/150",
+      employeeName: "John Doe",
+      leaveType: "Sick Leave",
+      applicationDate: "2024-08-01",
+      totalDays: 3,
+      hrStatus: "Rejected",
+      billingStatus: "Rejected",
+      leadStatus: "Rejected",
     },
     {
-      title: "Leave Type Details",
-      dataIndex: "leaveTypeDetails",
-      key: "leaveTypeDetails",
-      render: (text) => (
-        <Tooltip title={text}>
-          <LeaveTypeDetails>{text}</LeaveTypeDetails>
-        </Tooltip>
+      key: "2",
+      avatar: "https://via.placeholder.com/150",
+      employeeName: "Jane Smith",
+      leaveType: "Vacation",
+      applicationDate: "2024-08-05",
+      totalDays: 5,
+      hrStatus: "Rejected",
+      billingStatus: "Rejected",
+      leadStatus: "Rejected",
+    },
+  ]);
+
+  const columns = [
+    {
+      title: "Employee",
+      dataIndex: "employee",
+      key: "employee",
+      width: 130,
+      render: (_, record) => (
+        <Space>
+          <Avatar src={record.avatar} />
+          <div>
+            <div>{record.employeeName}</div>
+          </div>
+        </Space>
       ),
     },
     {
-      title: "Created On",
-      dataIndex: "createdOn",
-      key: "createdOn",
+      title: "Leave Type",
+      dataIndex: "leaveType",
+      key: "leaveType",
+      width: 130,
+    },
+    {
+      title: "Application Date",
+      dataIndex: "applicationDate",
+      key: "applicationDate",
+      width: 130,
       render: (text) => formatDate(text),
     },
     {
-      title: "Leave Type Status",
-      dataIndex: "leaveTypeStatus",
-      key: "leaveTypeStatus",
-      render: (text, record) => (
-        <StatusTag isActive={record.leaveTypeStatus}>
-          {record.leaveTypeStatus ? "Active" : "Inactive"}
-        </StatusTag>
-      ),
+      title: "Total Days",
+      dataIndex: "totalDays",
+      key: "totalDays",
+      width: 100,
+    },
+    {
+      title: "HR Status",
+      dataIndex: "hrStatus",
+      key: "hrStatus",
+      width: 130,
+      render: (status) => <StatusCell>{status}</StatusCell>,
+    },
+    {
+      title: "Billing Management Status",
+      dataIndex: "billingStatus",
+      key: "billingStatus",
+      width: 180,
+      render: (status) => <StatusCell>{status}</StatusCell>,
+    },
+    {
+      title: "Lead Status",
+      dataIndex: "leadStatus",
+      key: "leadStatus",
+      width: 100,
+      render: (status) => <StatusCell>{status}</StatusCell>,
     },
     {
       title: "Action",
       key: "action",
-      render: (text, record) => (
+      width: 100,
+      render: (_, record) => (
         <div className="actionDiv">
           <span>
             <img src={Edit} alt="edit" className="action-icon" />
@@ -79,6 +111,7 @@ const LeaveTypeList = () => {
               src={Delete}
               alt="delete"
               className="action-icon"
+              aria-label="Delete"
               onClick={() => handleDelete(record)}
             />
           </span>
@@ -90,15 +123,18 @@ const LeaveTypeList = () => {
   const handleSearch = (e) => {
     setSearchText(e.target.value.toLowerCase());
   };
+
   const filteredData = data.filter((item) =>
-    item.leaveTypeName.toLowerCase().includes(searchText)
+    item.employeeName.toLowerCase().includes(searchText)
   );
 
+  console.log(filteredData, "filteredData");
   const handleTableChange = (pagination) => {
     setPagination(pagination);
   };
 
   const handleDelete = (item) => {
+    console.log(item, "select");
     setSelectedItem(item);
     setShowDeleteModal(true);
   };
@@ -115,21 +151,21 @@ const LeaveTypeList = () => {
   };
 
   return (
-    <LeaveTypeWrapper>
+    <LeaveWrapper>
       <Header>
-        <Title>Leave Type List</Title>
+        <Title>Leave Rejected </Title>
         <Breadcrumb>
           <BreadcrumbItem>Dashboard</BreadcrumbItem>
           <RightOutlined className="breadcrumb-icon" />
-          <BreadcrumbItem>Leave Type</BreadcrumbItem>
+          <BreadcrumbItem>Leave</BreadcrumbItem>
           <RightOutlined className="breadcrumb-icon" />
-          <BreadcrumbItem isLast>Leave Type List</BreadcrumbItem>
+          <BreadcrumbItem isLast>Leave Rejected</BreadcrumbItem>
         </Breadcrumb>
       </Header>
       <SearchBar>
         <Input
           type="search"
-          placeholder="Search leave type"
+          placeholder="Search leave"
           onChange={handleSearch}
           style={{ width: 200 }}
         />
@@ -144,22 +180,22 @@ const LeaveTypeList = () => {
           pageSizeOptions: ["10", "20", "50"],
           showSizeChanger: true,
         }}
-        scroll={{ x: true, y: 500 }}
+        scroll={{ x: 1300, y: 500 }}
         onChange={handleTableChange}
       />
       <DeleteModal
         visible={showDeleteModal}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
-        itemName={selectedItem?.leaveTypeName}
+        itemName={selectedItem?.employeeName}
       />
-    </LeaveTypeWrapper>
+    </LeaveWrapper>
   );
 };
 
-export default LeaveTypeList;
+export default LeaveRejected;
 
-const LeaveTypeWrapper = styled.div`
+const LeaveWrapper = styled.div`
   padding: 20px;
   .actionDiv {
     display: flex;
@@ -200,7 +236,6 @@ const Breadcrumb = styled.div`
     font-size: 10px;
   }
 `;
-
 const BreadcrumbItem = styled.span`
   color: ${(props) => (props.isLast ? "#888" : "#2c7aba7d")};
 `;
@@ -209,21 +244,11 @@ const SearchBar = styled.div`
   margin-bottom: 10px;
 `;
 
-const StatusTag = styled.span`
-  background-color: ${(props) => (props.isActive ? "#66bb6a" : "#ef5350")};
+const StatusCell = styled.div`
+  background-color: #ef5350;
+  display: inline-block;
+  text-align: center;
   color: white;
   padding: 5px 10px;
   border-radius: 20px;
-  display: inline-block;
-  text-align: center;
-`;
-
-const LeaveTypeDetails = styled.span`
-  display: inline-block;
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  cursor: pointer;
 `;

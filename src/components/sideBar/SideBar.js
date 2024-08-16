@@ -19,108 +19,51 @@ import {
 } from "../../Utils/images";
 import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SideBar = () => {
   const navigate = useNavigate();
-  const [isDepartmentOpen, setDepartmentOpen] = useState(false);
-  const [isLeaveTypeOpen, setLeaveTypeOpen] = useState(false);
-  const [isEmployeeOpen, setEmployeeOpen] = useState(false);
-  const [isLeaveOpen, setLeaveOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-
-  const toggleDepartment = () => {
-    if (isSidebarOpen) {
-      setDepartmentOpen(!isDepartmentOpen);
-      setLeaveTypeOpen(false);
-      setEmployeeOpen(false);
-    } else {
-      setSidebarOpen(true);
-      setLeaveTypeOpen(false);
-      setEmployeeOpen(false);
-    }
-  };
-
-  const toggleLeaveType = () => {
-    if (isSidebarOpen) {
-      setLeaveTypeOpen(!isLeaveTypeOpen);
-      setDepartmentOpen(false);
-      setEmployeeOpen(false);
-    } else {
-      setSidebarOpen(true);
-      setDepartmentOpen(false);
-      setEmployeeOpen(false);
-    }
-  };
-
-  const toggleEmployee = () => {
-    if (isSidebarOpen) {
-      setEmployeeOpen(!isEmployeeOpen);
-      setDepartmentOpen(false);
-      setLeaveTypeOpen(false);
-    } else {
-      setSidebarOpen(true);
-      setDepartmentOpen(false);
-      setLeaveTypeOpen(false);
-    }
-  };
-
-  const toggleLeave = () => {
-    if (isSidebarOpen) {
-      setLeaveOpen(!isLeaveOpen);
-      setDepartmentOpen(false);
-      setLeaveTypeOpen(false);
-      setEmployeeOpen(false); // Close other menus
-    } else {
-      setSidebarOpen(true);
-      setDepartmentOpen(false);
-      setLeaveTypeOpen(false);
-      setEmployeeOpen(false); // Close other menus
-    }
+  const [openMenu, setOpenMenu] = useState("");
+  const [activeMenu, setActiveMenu] = useState("");
+  const [activeSubMenu, setActiveSubMenu] = useState("");
+  const toggleMenu = (menuName) => {
+    setSidebarOpen(true);
+    setOpenMenu((prevMenu) => (prevMenu === menuName ? "" : menuName));
+    setActiveMenu(menuName);
+    setActiveSubMenu("");
   };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-    setDepartmentOpen(false);
-    setLeaveTypeOpen(false);
-    setEmployeeOpen(false);
-    setLeaveOpen(false);
+    setSidebarOpen((prev) => !prev);
+    setOpenMenu("");
   };
 
-  const handleAddDepartment = () => {
-    navigate("/departmentAdd");
+  const handleNavigation = (path, menuName, subMenuName) => {
+    navigate(path);
+    if (menuName) setActiveMenu(menuName);
+    if (subMenuName) setActiveSubMenu(subMenuName);
   };
 
-  const toggleDepartmentList = () => {
-    navigate("/departmentList");
-  };
-
-  const handleAddLeaveType = () => {
-    navigate("/leaveTypeAdd");
-  };
-
-  const handleLeaveTypeList = () => {
-    navigate("/leaveTypeList");
-  }
-
-  const handleAddEmployee = () => {
-    navigate("/employeeAdd");
-  };
   return (
     <SideNavWrapper isOpen={isSidebarOpen}>
       <div className="top-section">
         <img src={Logo} alt="Logo" className="logo-img" />
         <ToggleButton onClick={toggleSidebar} isOpen={isSidebarOpen}>
-          {isSidebarOpen ? (
-            <img src={Back} alt="Logo" className="toggle-icon" />
-          ) : (
-            <img src={Next} alt="Logo" className="toggle-icon" />
-          )}
+          <img
+            src={isSidebarOpen ? Back : Next}
+            alt="toggle-icon"
+            className="toggle-icon"
+          />
         </ToggleButton>
       </div>
       <div>
-        <MenuItem isOpen={isSidebarOpen} onClick={toggleDepartment}>
-          <Link to="/dashboard" className="menu-content">
+        <MenuItem
+          isOpen={isSidebarOpen}
+          isActive={activeMenu === "dashboard"}
+          onClick={() => handleNavigation("/dashboard", "dashboard")}
+        >
+          <div className="menu-content">
             <Tooltip title="Dashboard" placement="top">
               <img
                 src={Dashboard}
@@ -129,9 +72,14 @@ const SideBar = () => {
               />
             </Tooltip>
             {isSidebarOpen && <span>Dashboard</span>}
-          </Link>
+          </div>
         </MenuItem>
-        <MenuItem onClick={toggleDepartment} isOpen={isSidebarOpen}>
+
+        <MenuItem
+          isOpen={isSidebarOpen}
+          isActive={activeMenu === "department"}
+          onClick={() => toggleMenu("department")}
+        >
           <div className="menu-content">
             <Tooltip title="Department" placement="top">
               <img
@@ -144,31 +92,58 @@ const SideBar = () => {
           </div>
           {isSidebarOpen && (
             <>
-              {isDepartmentOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}
+              {openMenu === "department" ? (
+                <CaretUpOutlined />
+              ) : (
+                <CaretDownOutlined />
+              )}
             </>
           )}
         </MenuItem>
-        {isDepartmentOpen && isSidebarOpen && (
+        {openMenu === "department" && isSidebarOpen && (
           <SubMenu>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "departmentAdd"}
+              onClick={() =>
+                handleNavigation(
+                  "/departmentAdd",
+                  "department",
+                  "departmentAdd"
+                )
+              }
+            >
               <img
                 src={DepartmentAdd}
                 alt="department-add"
                 className="menu-icons"
               />
-              <span onClick={handleAddDepartment}>Add Department</span>
+              <span>Add Department</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "departmentList"}
+              onClick={() =>
+                handleNavigation(
+                  "/departmentList",
+                  "department",
+                  "departmentList"
+                )
+              }
+            >
               <img
                 src={DepartmentList}
-                alt="department-add"
+                alt="department-list"
                 className="menu-icons"
               />
-              <span onClick={toggleDepartmentList}>Department List</span>
+              <span>Department List</span>
             </SubMenuItem>
           </SubMenu>
         )}
-        <MenuItem onClick={toggleLeaveType} isOpen={isSidebarOpen}>
+
+        <MenuItem
+          isOpen={isSidebarOpen}
+          isActive={activeMenu === "leaveType"}
+          onClick={() => toggleMenu("leaveType")}
+        >
           <div className="menu-content">
             <Tooltip title="Leave Type" placement="top">
               <img
@@ -180,30 +155,51 @@ const SideBar = () => {
             {isSidebarOpen && <span>Leave Type</span>}
           </div>
           {isSidebarOpen && (
-            <>{isLeaveTypeOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}</>
+            <>
+              {openMenu === "leaveType" ? (
+                <CaretUpOutlined />
+              ) : (
+                <CaretDownOutlined />
+              )}
+            </>
           )}
         </MenuItem>
-        {isLeaveTypeOpen && isSidebarOpen && (
+        {openMenu === "leaveType" && isSidebarOpen && (
           <SubMenu>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leaveTypeAdd"}
+              onClick={() =>
+                handleNavigation("/leaveTypeAdd", "leaveType", "leaveTypeAdd")
+              }
+            >
               <img
                 src={LeaveTypeAdd}
-                alt="leave-type-icon"
+                alt="leave-type-add"
                 className="menu-icons"
               />
-              <span onClick={handleAddLeaveType}>Add Leave Type </span>
+              <span>Add Leave Type</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leaveTypeList"}
+              onClick={() =>
+                handleNavigation("/leaveTypeList", "leaveType", "leaveTypeList")
+              }
+            >
               <img
                 src={LeaveTypeList}
-                alt="leave-type-icon"
+                alt="leave-type-list"
                 className="menu-icons"
               />
-              <span onClick={handleLeaveTypeList}>Leave Type List</span>
+              <span>Leave Type List</span>
             </SubMenuItem>
           </SubMenu>
         )}
-        <MenuItem onClick={toggleEmployee} isOpen={isSidebarOpen}>
+
+        <MenuItem
+          isOpen={isSidebarOpen}
+          isActive={activeMenu === "employee"}
+          onClick={() => toggleMenu("employee")}
+        >
           <div className="menu-content">
             <Tooltip title="Employee" placement="top">
               <img src={Employee} alt="employee-icon" className="menu-icons" />
@@ -211,23 +207,39 @@ const SideBar = () => {
             {isSidebarOpen && <span>Employee</span>}
           </div>
           {isSidebarOpen && (
-            <>{isEmployeeOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}</>
+            <>
+              {openMenu === "employee" ? (
+                <CaretUpOutlined />
+              ) : (
+                <CaretDownOutlined />
+              )}
+            </>
           )}
         </MenuItem>
-        {isEmployeeOpen && isSidebarOpen && (
+        {openMenu === "employee" && isSidebarOpen && (
           <SubMenu>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "employeeAdd"}
+              onClick={() =>
+                handleNavigation("/employeeAdd", "employee", "employeeAdd")
+              }
+            >
               <img
                 src={EmployeeAdd}
-                alt="leave-type-icon"
+                alt="employee-add"
                 className="menu-icons"
               />
-              <span onClick={handleAddEmployee}>Add Employee</span>
+              <span>Add Employee</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "employeeList"}
+              onClick={() =>
+                handleNavigation("/employeeList", "employee", "employeeList")
+              }
+            >
               <img
                 src={EmployeeList}
-                alt="leave-type-icon"
+                alt="employee-list"
                 className="menu-icons"
               />
               <span>Employee List</span>
@@ -235,7 +247,11 @@ const SideBar = () => {
           </SubMenu>
         )}
 
-        <MenuItem onClick={toggleLeave} isOpen={isSidebarOpen}>
+        <MenuItem
+          isOpen={isSidebarOpen}
+          isActive={activeMenu === "leave"}
+          onClick={() => toggleMenu("leave")}
+        >
           <div className="menu-content">
             <Tooltip title="Leave" placement="top">
               <img src={Leave} alt="leave-icon" className="menu-icons" />
@@ -243,12 +259,23 @@ const SideBar = () => {
             {isSidebarOpen && <span>Leave</span>}
           </div>
           {isSidebarOpen && (
-            <>{isLeaveOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}</>
+            <>
+              {openMenu === "leave" ? (
+                <CaretUpOutlined />
+              ) : (
+                <CaretDownOutlined />
+              )}
+            </>
           )}
         </MenuItem>
-        {isLeaveOpen && isSidebarOpen && (
+        {openMenu === "leave" && isSidebarOpen && (
           <SubMenu>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leaveList"}
+              onClick={() =>
+                handleNavigation("/leaveList", "leave", "leaveList")
+              }
+            >
               <img
                 src={leaveList}
                 alt="leave-list-icon"
@@ -256,7 +283,12 @@ const SideBar = () => {
               />
               <span>Leave List</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leavePending"}
+              onClick={() =>
+                handleNavigation("/leavePending", "leave", "leavePending")
+              }
+            >
               <img
                 src={leaveList}
                 alt="leave-pending-icon"
@@ -264,18 +296,28 @@ const SideBar = () => {
               />
               <span>Leave Pending</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leaveApproved"}
+              onClick={() =>
+                handleNavigation("/leaveApproved", "leave", "leaveApproved")
+              }
+            >
               <img
                 src={leaveList}
-                alt="leave-approve-icon"
+                alt="leave-approved-icon"
                 className="menu-icons"
               />
-              <span>Leave Approve</span>
+              <span>Leave Approved</span>
             </SubMenuItem>
-            <SubMenuItem>
+            <SubMenuItem
+              isActive={activeSubMenu === "leaveRejected"}
+              onClick={() =>
+                handleNavigation("/leaveRejected", "leave", "leaveRejected")
+              }
+            >
               <img
                 src={leaveList}
-                alt="leave-rejected-icon"
+                alt="leave-reject-icon"
                 className="menu-icons"
               />
               <span>Leave Rejected</span>
@@ -286,14 +328,13 @@ const SideBar = () => {
     </SideNavWrapper>
   );
 };
-
 export default SideBar;
 
 const SideNavWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 20px;
-  width: ${({ isOpen }) => (isOpen ? "200px" : "80px")};
+  width: ${({ isOpen }) => (isOpen ? "220px" : "80px")};
   transition: width 0.3s ease-in-out;
   overflow: hidden;
   align-items: ${({ isOpen }) => (isOpen ? "stretch" : "center")};
@@ -319,6 +360,14 @@ const MenuItem = styled.div`
   justify-content: space-between;
   margin: 8px 0;
   cursor: pointer;
+  padding: 2px;
+  border-radius: 5px;
+  background-color: ${({ isActive }) => (isActive ? "#f0f0f0" : "transparent")};
+  border-left: ${({ isActive }) =>
+    isActive ? " 5px solid #26a69a " : "transparent"};
+  &:hover {
+    background-color: #f0f0f0;
+  }
 
   .menu-content {
     display: flex;
@@ -347,6 +396,7 @@ const SubMenu = styled.div`
   flex-direction: column;
   padding-left: 20px;
   margin: 5px 0px;
+  cursor: pointer;
 `;
 
 const SubMenuItem = styled.div`
@@ -354,6 +404,14 @@ const SubMenuItem = styled.div`
   align-items: center;
   margin: 8px 0;
   font-size: 14px;
+  border-radius: 5px;
+  padding: 2px;
+  background-color: ${({ isActive }) => (isActive ? "#f0f0f0" : "transparent")};
+  border-left: ${({ isActive }) =>
+    isActive ? " 5px solid #26a69a " : "transparent"};
+  &:hover {
+    background-color: #e0e0e0;
+  }
 
   span {
     margin-left: 5px;
@@ -383,7 +441,7 @@ const ToggleButton = styled.button`
   align-items: center;
   position: absolute;
   top: 10px;
-  left: ${({ isOpen }) => (isOpen ? "220px" : "100px")};
+  left: ${({ isOpen }) => (isOpen ? "240px" : "100px")};
   width: 40px;
   height: 40px;
   justify-content: center;

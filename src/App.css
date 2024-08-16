@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+.custom-table thead th,
+.custom-table tbody td {
+  border-right: 1px solid #d9d9d9; /* Add a right border to each cell */
+}
+
+.custom-table tbody tr:last-child td {
+  border-bottom: 1px solid #d9d9d9; /* Add a bottom border to the last row */
+}
+
+.custom-table thead th:first-child,
+.custom-table tbody td:first-child {
+  border-left: 1px solid #d9d9d9; /* Add a left border to the first column */
+}
+
+.custom-table thead th {
+  border-top: 1px solid #d9d9d9; /* Add a top border to the header cells */
+}
+
+.custom-table {
+  border-collapse: separate; /* Ensure borders do not overlap */
+}

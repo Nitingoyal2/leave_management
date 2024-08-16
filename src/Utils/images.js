@@ -17,7 +17,7 @@ import LeaveTypeAdd from "../assets/images/leavetypeadd.png";
 import LeaveTypeList from "../assets/images/leavetypelist.png";
 import EmployeeAdd from "../assets/images/employeeAdd.png";
 import EmployeeList from "../assets/images/employeelist.png";
-import leaveList from "../assets/images/leavelist.png"
+import leaveList from "../assets/images/leavelistt.png";
 import Edit from "../assets/images/edit.png";
 import Delete from "../assets/images/delete.png";
 
@@ -43,5 +43,5 @@ export {
   EmployeeList,
   leaveList,
   Edit,
-  Delete
+  Delete,
 };
