@@ -38,12 +38,10 @@ export default function AllRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
         <Route element={<PublicRoute isAuthenticated={!!token} />}>
           {renderRoutes(PublicRoutes)}
         </Route>
 
-        {/* Private Routes */}
         <Route element={<PrivateRoute isAuthenticated={!!token} />}>
           {renderRoutes(PrivateRoutes)}
         </Route>

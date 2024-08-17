@@ -5,14 +5,18 @@ import { CaretDownOutlined } from "@ant-design/icons";
 import { authlogout } from "../../Store/Authentication";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleLogout = () => {
     dispatch(authlogout());
     navigate("/");
+    toast.success("Logout Successful");
   };
+
   const menu = (
     <StyledMenu>
       <Menu.Item key="0" onClick={handleLogout}>
@@ -29,8 +33,8 @@ const Header = () => {
     <HeaderWrapper>
       <RightDiv>
         <Text>
-          <p>Nitin Kumar</p>
-          <span>Emp ID:587</span>
+          <Name>Nitin Kumar</Name>
+          <EmpId>Emp ID: 587</EmpId>
         </Text>
         <Dropdown overlay={menu} trigger={["click"]}>
           <AvatarDiv
@@ -111,4 +115,16 @@ const StyledMenu = styled(Menu)`
   .ant-dropdown-menu-item-divider {
     background-color: rgb(1 7 19 / 32%) !important  ;
   }
+`;
+
+const Name = styled.p`
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+`;
+
+const EmpId = styled.span`
+  font-size: 14px;
+  color: #616161;
 `;
