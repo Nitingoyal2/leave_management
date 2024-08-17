@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
 import { Employee } from "../../Utils/images";
-import { Select } from "antd"; // Import Ant Design Select component
-
+import { Select } from "antd";
+import {   Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 const { Option } = Select;
 
 const Dashboard = () => {
@@ -140,7 +140,14 @@ const Dashboard = () => {
     selectedRole === "All"
       ? staffList
       : staffList.filter((staff) => staff.role === selectedRole);
+  const data = [
+    { name: "Total Leave", value: 123 },
+    { name: "Rejected Leave", value: 45 },
+    { name: "Approved Leave", value: 67 },
+    { name: "Pending Leave", value: 12 },
+  ];
 
+  const COLORS = ["#8884d8", "#ff6f61", "#4caf50", "#ffc107"];
   return (
     <DashboardWrapper>
       <Title>Dashboard</Title>
@@ -166,6 +173,30 @@ const Dashboard = () => {
           <MetricTitle>Pending Leave</MetricTitle>
         </Metric>
       </MetricsContainer>
+
+      <ChartSection>
+        <ChartTitle>Leave Statistics</ChartTitle>
+        <PieChart width={400} height={400} className="pie-chart">
+          <Pie
+            data={data}
+            dataKey="value"
+            outerRadius={150}
+            innerRadius={80}
+            fill="#8884d8"
+            label
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ChartSection>
+
       <TeamSection>
         <TeamTitle>Team Overview</TeamTitle>
         <StaffSection>
@@ -344,4 +375,18 @@ const StaffEmail = styled.div`
 const StaffRole = styled.div`
   font-size: 14px;
   color: #777;
+`;
+
+const ChartSection = styled.div`
+  margin-top: 30px;
+  .pie-chart {
+    margin: 0 auto;
+  }
+`;
+
+const ChartTitle = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
 `;
