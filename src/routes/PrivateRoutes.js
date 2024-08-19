@@ -10,6 +10,8 @@ import LeaveList from "../pages/leave/leaveList/LeaveList";
 import LeavePending from "../pages/leave/leavePending/LeavePending";
 import LeaveApproved from "../pages/leave/leaveApproved/LeaveApproved";
 import LeaveRejected from "../pages/leave/leaveRejected/LeaveRejected";
+import NewLeave from "../pages/leave/newLeave/NewLeave";
+import ProfilePage from "../pages/profile/Profile";
 export const PrivateRoutes = [
   { path: "dashboard", element: <Dashboard /> },
   { path: "departmentAdd", element: <CreateDepartment /> },
@@ -22,5 +24,8 @@ export const PrivateRoutes = [
   { path: "leavePending", element: <LeavePending /> },
   { path: "leaveApproved", element: <LeaveApproved /> },
   { path: "leaveRejected", element: <LeaveRejected /> },
+  { path: "newLeave", element: <NewLeave /> },
+  { path: "profile", element: <ProfilePage /> },
+
   //   { path: "*", element: <PageNotFound /> }, // Catch-all route for 404
 ];

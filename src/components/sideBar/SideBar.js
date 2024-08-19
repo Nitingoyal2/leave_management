@@ -271,6 +271,19 @@ const SideBar = () => {
         {openMenu === "leave" && isSidebarOpen && (
           <SubMenu>
             <SubMenuItem
+              isActive={activeSubMenu === "newLeave"}
+              onClick={() =>
+                handleNavigation("/newLeave", "leave", "newLeave")
+              }
+            >
+              <img
+                src={LeaveTypeAdd}
+                alt="new-leave-icon"
+                className="menu-icons"
+              />
+              <span>New Leave</span>
+            </SubMenuItem>
+            <SubMenuItem
               isActive={activeSubMenu === "leaveList"}
               onClick={() =>
                 handleNavigation("/leaveList", "leave", "leaveList")

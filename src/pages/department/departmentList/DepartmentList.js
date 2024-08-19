@@ -4,6 +4,7 @@ import { Table, Input, Tooltip } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
+import StatusModal from "../../../components/modal/statusModal/StatusModal";
 
 const DepartmentList = () => {
   const [data, setData] = useState([
@@ -152,12 +153,37 @@ const DepartmentList = () => {
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [statusModalVisible, setStatusModalVisible] = useState(false);
   const [selectedDept, setSelectedDept] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = { day: "numeric", month: "short", year: "numeric" };
     return date.toLocaleDateString("en-US", options);
+  };
+
+  const handleStatusClick = (record) => {
+    setSelectedDept(record);
+    setSelectedStatus(record.deptStatus);
+    setStatusModalVisible(true);
+  };
+
+  const confirmStatusChange = () => {
+    if (selectedDept) {
+      const updatedData = data.map((dept) =>
+        dept.key === selectedDept.key
+          ? { ...dept, deptStatus: !selectedStatus }
+          : dept
+      );
+      setData(updatedData);
+      setStatusModalVisible(false);
+    }
+  };
+
+  const cancelStatusChange = () => {
+    setSelectedDept(null);
+    setStatusModalVisible(false);
   };
 
   const columns = [
@@ -187,7 +213,10 @@ const DepartmentList = () => {
       dataIndex: "deptStatus",
       key: "deptStatus",
       render: (text, record) => (
-        <StatusTag isActive={record.deptStatus}>
+        <StatusTag
+          isActive={record.deptStatus}
+          onClick={() => handleStatusClick(record)}
+        >
           {record.deptStatus ? "Active" : "Inactive"}
         </StatusTag>
       ),
@@ -231,7 +260,6 @@ const DepartmentList = () => {
 
   const confirmDelete = () => {
     if (selectedDept) {
-      // Implement delete logic here
       console.log(`Deleting department: ${selectedDept.deptName}`);
       setData(data.filter((item) => item.key !== selectedDept.key));
       setSelectedDept(null);
@@ -282,6 +310,12 @@ const DepartmentList = () => {
         visible={deleteModalVisible}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
+        itemName={selectedDept?.deptName}
+      />
+      <StatusModal
+        visible={statusModalVisible}
+        onConfirm={confirmStatusChange}
+        onCancel={cancelStatusChange}
         itemName={selectedDept?.deptName}
       />
     </DepartmentWrapper>
@@ -348,6 +382,7 @@ const StatusTag = styled.span`
   border-radius: 20px;
   display: inline-block;
   text-align: center;
+  cursor: pointer;
 `;
 
 const DepartmentDetails = styled.span`

@@ -4,6 +4,7 @@ import { Table, Input, Tooltip } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
+import StatusModal from "../../../components/modal/statusModal/StatusModal";
 
 const LeaveTypeList = () => {
   const [data, setData] = useState([
@@ -27,11 +28,36 @@ const LeaveTypeList = () => {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [statusModalVisible, setStatusModalVisible] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = { day: "numeric", month: "short", year: "numeric" };
     return date.toLocaleDateString("en-US", options);
+  };
+
+  const handleStatusClick = (record) => {
+    setSelectedItem(record);
+    setSelectedStatus(record.leaveTypeStatus);
+    setStatusModalVisible(true);
+  };
+
+  const confirmStatusChange = () => {
+    if (selectedItem) {
+      const updatedData = data.map((item) =>
+        item.key === selectedItem.key
+          ? { ...item, leaveTypeStatus: !selectedStatus }
+          : item
+      );
+      setData(updatedData);
+      setStatusModalVisible(false);
+    }
+  };
+
+  const cancelStatusChange = () => {
+    setSelectedItem(null);
+    setStatusModalVisible(false);
   };
 
   const columns = [
@@ -61,7 +87,10 @@ const LeaveTypeList = () => {
       dataIndex: "leaveTypeStatus",
       key: "leaveTypeStatus",
       render: (text, record) => (
-        <StatusTag isActive={record.leaveTypeStatus}>
+        <StatusTag
+          isActive={record.leaveTypeStatus}
+          onClick={() => handleStatusClick(record)}
+        >
           {record.leaveTypeStatus ? "Active" : "Inactive"}
         </StatusTag>
       ),
@@ -151,6 +180,12 @@ const LeaveTypeList = () => {
         visible={showDeleteModal}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
+        itemName={selectedItem?.leaveTypeName}
+      />
+      <StatusModal
+        visible={statusModalVisible}
+        onConfirm={confirmStatusChange}
+        onCancel={cancelStatusChange}
         itemName={selectedItem?.leaveTypeName}
       />
     </LeaveTypeWrapper>

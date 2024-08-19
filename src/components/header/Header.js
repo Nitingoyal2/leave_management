@@ -23,8 +23,8 @@ const Header = () => {
         <span>Logout</span>
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="1">
-        <a href="/">Profile</a>
+      <Menu.Item key="1" onClick={() => navigate("/profile")}>
+        <span>Profile</span>
       </Menu.Item>
     </StyledMenu>
   );
