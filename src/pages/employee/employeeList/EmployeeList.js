@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Table, Input, Space, Tooltip, Avatar } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
+import { getEmployeeList } from "../../../Services/Collection";
+import { toast } from "react-toastify";
 
 const EmployeeList = () => {
   const [searchText, setSearchText] = useState("");
@@ -42,6 +44,25 @@ const EmployeeList = () => {
     },
   ]);
 
+
+  const fetchData = async () => {
+    try {
+      const res = await getEmployeeList();
+      if (res?.status === 200) {
+        setData(res?.data?.findUsers);
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        setData([]);
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    }
+  }
   const columns = [
     {
       title: "Employee",
@@ -146,6 +167,10 @@ const EmployeeList = () => {
     setSelectedItem(null);
   };
 
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <EmployeeWrapper>
       <Header>

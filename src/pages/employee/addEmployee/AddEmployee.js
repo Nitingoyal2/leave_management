@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -6,10 +6,13 @@ import { Select, Button, Upload } from "antd";
 import { EditOutlined, RightOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { toast } from "react-toastify";
+import { AddEmployeeApi } from "../../../Services/Collection";
 
 const { Option } = Select;
 
 const AddEmployee = () => {
+  const [loading, setLoading] = useState(false);
   const validationSchema = Yup.object({
     avatar: Yup.mixed().required("Avatar is required"),
     firstName: Yup.string()
@@ -29,6 +32,8 @@ const AddEmployee = () => {
     role: Yup.string().required("Role is required"),
     address: Yup.string().required("Address is required"),
     password: Yup.string().required("Password is required"),
+    deptName: Yup.string().required("Department name is required"),
+    employeeId: Yup.string().required("Employee Id is required"),
   });
 
   const initialValues = {
@@ -42,10 +47,46 @@ const AddEmployee = () => {
     role: "",
     address: "",
     password: "",
+    deptName: "",
+    employeeId: "",
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values, { resetForm }) => {
     console.log("Form data:", values);
+    const payload = {
+      department_id: values.deptName,
+      profile_img: values.avatar,
+      first_name: values.firstName,
+      last_name: values.lastName,
+      gender: values.gender,
+      date_of_birth: values.dob,
+      mobile_no: values.phone,
+      email: values.email,
+      role: values.role,
+      password: values.password,
+      address: values.address,
+    };
+    console.log("payload", payload);
+    setLoading(true);
+    try {
+      let res = AddEmployeeApi(payload);
+      console.log(res, "api response");
+      if (res?.status === 200) {
+        toast.success("Employee Added Successfully");
+        resetForm();
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFileChange = (file, setFieldValue) => {
@@ -180,6 +221,35 @@ const AddEmployee = () => {
                 />
                 <ErrorMsg name="password" component="div" />
               </FormGroup>
+              {/* ADD DEPRTMENT NAME  */}
+              <FormGroup>
+                <Label htmlFor="deptName">Department Name</Label>
+                <Select
+                  value={values.deptName}
+                  onChange={(value) => setFieldValue("deptName", value)}
+                  placeholder="Select department name"
+                  style={{ width: "100%" }}
+                >
+                  <Option value="">Select department</Option>
+                  {/* web , backend , ios , business , hr  */}
+                  <Option value="0">Web</Option>
+                  <Option value="1">Backend</Option>
+                  <Option value="2">IOS</Option>
+                  <Option value="3">Business</Option>
+                  <Option value="4">HR</Option>
+                </Select>
+                <ErrorMsg name="deptName" component="div" />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="employeeId">Employee Id</Label>
+                <StyledField
+                  type="text"
+                  id="employeeId"
+                  name="employeeId"
+                  placeholder="Enter Password"
+                />
+                <ErrorMsg name="employeeId" component="div" />
+              </FormGroup>
             </div>
             <FormGroup>
               <Label htmlFor="address">Address</Label>
@@ -191,7 +261,9 @@ const AddEmployee = () => {
               <ErrorMsg name="address" component="div" />
             </FormGroup>
 
-            <SubmitButton type="submit">Add Employee</SubmitButton>
+            <SubmitButton type="submit" disabled={loading}>
+              {loading ? "Loading..." : "Add Employee"}
+            </SubmitButton>
           </StyledForm>
         )}
       </Formik>

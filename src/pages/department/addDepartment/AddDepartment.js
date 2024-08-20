@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; 
-import {  RightOutlined } from "@ant-design/icons";
+import "react-quill/dist/quill.snow.css";
+import { RightOutlined } from "@ant-design/icons";
+import { AddDepartmentApi } from "../../../Services/Collection";
+import { toast } from "react-toastify";
 
 const CreateDepartment = () => {
+  const [loading, setLoading] = useState(false);
+
   const validationSchema = Yup.object({
     deptName: Yup.string()
       .max(50, "Department name must be 50 characters or less")
@@ -25,8 +29,35 @@ const CreateDepartment = () => {
     deptStatus: false,
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values, { resetForm }) => {
     console.log("Form data", values);
+    const payload = {
+      department_name: values.deptName,
+      department_short_name: values.deptShortName,
+      department_details: values.deptDetails,
+      department_status: values.deptStatus,
+    };
+    console.log("payload", payload);
+    setLoading(true);
+    try {
+      let res = AddDepartmentApi(payload);
+      console.log(res, "api response");
+      if (res?.status === 200) {
+        toast.success("Department Added Successfully");
+        resetForm();
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,7 +77,7 @@ const CreateDepartment = () => {
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, resetForm }) => (
           <StyledForm>
             <FormGroup>
               <Label htmlFor="deptName">Department Name</Label>
@@ -94,8 +125,9 @@ const CreateDepartment = () => {
                 </Label>
               </CheckboxContainer>
             </FormGroup>
-
-            <Button type="submit">Add Department</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Loading..." : "Add Department"}
+            </Button>
           </StyledForm>
         )}
       </Formik>
@@ -104,7 +136,6 @@ const CreateDepartment = () => {
 };
 
 export default CreateDepartment;
-
 
 const DepartmentWrapper = styled.div`
   padding: 20px;

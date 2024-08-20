@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Table, Input, Tooltip } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
 import StatusModal from "../../../components/modal/statusModal/StatusModal";
+import { getDepartmentList } from "../../../Services/Collection";
 
 const DepartmentList = () => {
   const [data, setData] = useState([
@@ -163,6 +164,16 @@ const DepartmentList = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
+  const fetchData = async () => {
+    try {
+      const response = await getDepartmentList();
+      if (response.status === 200) {
+        setData(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleStatusClick = (record) => {
     setSelectedDept(record);
     setSelectedStatus(record.deptStatus);
@@ -271,6 +282,10 @@ const DepartmentList = () => {
     setSelectedDept(null);
     setDeleteModalVisible(false);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <DepartmentWrapper>

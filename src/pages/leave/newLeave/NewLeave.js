@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { RightOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
 import { Select } from "antd";
+import { AddLeaveApi } from "../../../Services/Collection";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 const NewLeave = () => {
+  const [loading, setLoading] = useState(false);
   const validationSchema = Yup.object({
     leaveType: Yup.string().required("Leave type is required"),
     numberOfDays: Yup.number()
@@ -30,8 +33,36 @@ const NewLeave = () => {
     leaveDescription: "",
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values, { resetForm }) => {
     console.log("Form data", values);
+    const payload = {
+      employee_id: "1234",
+      leave_type_id: values.leaveType,
+      leaves_count: values.numberOfDays,
+      start_date: values.startDate,
+      end_date: values.endDate,
+      reason: values.leaveDescription,
+    };
+    setLoading(true);
+    try {
+      let res = AddLeaveApi(payload);
+      console.log(res, "api response");
+      if (res?.status === 200) {
+        toast.success("Leave added successfully");
+        resetForm();
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,9 +94,9 @@ const NewLeave = () => {
                   style={{ width: "100%" }}
                 >
                   <Option value="">Select leave type</Option>
-                  <Option value="sick">Sick Leave</Option>
-                  <Option value="casual">Casual Leave</Option>
-                  <Option value="maternity">Maternity Leave</Option>
+                  <Option value="0">Sick Leave</Option>
+                  <Option value="1">Casual Leave</Option>
+                  <Option value="2">Maternity Leave</Option>
                 </Select>
 
                 <ErrorMsg name="leaveType" component="div" />
@@ -107,7 +138,9 @@ const NewLeave = () => {
               <ErrorMsg name="leaveDescription" component="div" />
             </FormGroup>
 
-            <Button type="submit">Apply Leave</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Loading..." : "Add Leave"}
+            </Button>
           </StyledForm>
         )}
       </Formik>
