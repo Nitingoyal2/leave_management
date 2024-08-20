@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { authlogin } from "../Store/Authentication";
 import { toast } from "react-toastify";
-
+import { AdminLogin } from "../Services/Collection";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,15 +26,35 @@ const Login = () => {
     password: yup.string().required("Password is required"),
   });
 
-  const token = Math.random().toString(36).slice(-10);
-  console.log(token, "token");
   const handleSubmit = async (values) => {
-    const payload = { ...values, token };
+    console.log(values, "values");
+    const payload = {
+      email: values?.email,
+      password: values?.password,
+    };
+    console.log(payload, "payload");
     setLoading(true);
     try {
-      await dispatch(authlogin(payload));
-      navigate("/dashboard");
-      toast.success("Login Successful");
+      let res = await AdminLogin(payload);
+      console.log(res, "api response");
+      if (res?.status === 200) {
+        let filterData = {
+          ...res?.data,
+          token: res?.token,
+        };
+        toast.success("Login Successfully");
+        navigate("/dashboard");
+        dispatch(authlogin(filterData));
+        setLoading(false);
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        toast.error(message);
+        setLoading(false);
+      }
     } catch (error) {
       toast.error("Login failed. Please check your credentials and try again.");
     } finally {

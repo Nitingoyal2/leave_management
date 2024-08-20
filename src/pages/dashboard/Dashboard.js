@@ -1,136 +1,166 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
 import { Employee } from "../../Utils/images";
 import { Select } from "antd";
-import {   Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
+import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
+import { getEmployeeList } from "../../Services/Collection";
+import { toast } from "react-toastify";
 const { Option } = Select;
 
 const Dashboard = () => {
   const [selectedRole, setSelectedRole] = useState("All");
+  const [staffList, setStaffList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const staffList = [
-    {
-      name: "Staff Member 1",
-      email: "staff1@example.com",
-      role: "Web",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 2",
-      email: "staff2@example.com",
-      role: "Web",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 3",
-      email: "staff3@example.com",
-      role: "Web",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 4",
-      email: "staff4@example.com",
-      role: "Web",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 5",
-      email: "staff5@example.com",
-      role: "Web",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 6",
-      email: "staff6@example.com",
-      role: "Backend",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 7",
-      email: "staff7@example.com",
-      role: "Backend",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 8",
-      email: "staff8@example.com",
-      role: "Backend",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 9",
-      email: "staff9@example.com",
-      role: "Backend",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 10",
-      email: "staff10@example.com",
-      role: "Backend",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 11",
-      email: "staff11@example.com",
-      role: "Python",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 12",
-      email: "staff12@example.com",
-      role: "Python",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 13",
-      email: "staff13@example.com",
-      role: "Python",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 14",
-      email: "staff14@example.com",
-      role: "Python",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 15",
-      email: "staff15@example.com",
-      role: "Python",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 16",
-      email: "staff16@example.com",
-      role: "iOS",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 17",
-      email: "staff17@example.com",
-      role: "iOS",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 18",
-      email: "staff18@example.com",
-      role: "iOS",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 19",
-      email: "staff19@example.com",
-      role: "iOS",
-      avatar: Employee,
-    },
-    {
-      name: "Staff Member 20",
-      email: "staff20@example.com",
-      role: "iOS",
-      avatar: Employee,
-    },
-  ];
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await getEmployeeList();
+      if (res?.status === 200) {
+        setStaffList(res?.data?.findUsers);
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        setStaffList([]);
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // const staffList = [
+  //   {
+  //     name: "Staff Member 1",
+  //     email: "staff1@example.com",
+  //     role: "Web",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 2",
+  //     email: "staff2@example.com",
+  //     role: "Web",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 3",
+  //     email: "staff3@example.com",
+  //     role: "Web",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 4",
+  //     email: "staff4@example.com",
+  //     role: "Web",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 5",
+  //     email: "staff5@example.com",
+  //     role: "Web",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 6",
+  //     email: "staff6@example.com",
+  //     role: "Backend",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 7",
+  //     email: "staff7@example.com",
+  //     role: "Backend",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 8",
+  //     email: "staff8@example.com",
+  //     role: "Backend",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 9",
+  //     email: "staff9@example.com",
+  //     role: "Backend",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 10",
+  //     email: "staff10@example.com",
+  //     role: "Backend",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 11",
+  //     email: "staff11@example.com",
+  //     role: "Python",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 12",
+  //     email: "staff12@example.com",
+  //     role: "Python",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 13",
+  //     email: "staff13@example.com",
+  //     role: "Python",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 14",
+  //     email: "staff14@example.com",
+  //     role: "Python",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 15",
+  //     email: "staff15@example.com",
+  //     role: "Python",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 16",
+  //     email: "staff16@example.com",
+  //     role: "iOS",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 17",
+  //     email: "staff17@example.com",
+  //     role: "iOS",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 18",
+  //     email: "staff18@example.com",
+  //     role: "iOS",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 19",
+  //     email: "staff19@example.com",
+  //     role: "iOS",
+  //     avatar: Employee,
+  //   },
+  //   {
+  //     name: "Staff Member 20",
+  //     email: "staff20@example.com",
+  //     role: "iOS",
+  //     avatar: Employee,
+  //   },
+  // ];
 
   const handleRoleChange = (value) => {
     setSelectedRole(value);
@@ -140,6 +170,7 @@ const Dashboard = () => {
     selectedRole === "All"
       ? staffList
       : staffList.filter((staff) => staff.role === selectedRole);
+
   const data = [
     { name: "Total Leave", value: 123 },
     { name: "Rejected Leave", value: 45 },
@@ -204,7 +235,11 @@ const Dashboard = () => {
             <StaffTitle>Staff List</StaffTitle>
             <FilterDropdown onChange={handleRoleChange} />
           </div>
-          <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
+          )}
         </StaffSection>
       </TeamSection>
     </DashboardWrapper>
@@ -226,7 +261,7 @@ const FilterDropdown = ({ onChange }) => {
 const generateStaffList = (staffList) => {
   return staffList.map((staff, index) => (
     <StaffItem key={`staff-${index}`}>
-      <Avatar src={staff.avatar} alt={`Staff ${index + 1}`} />
+      <Avatar src={staff.avatar || Employee} alt={`Staff ${index + 1}`} />
       <StaffDetails>
         <StaffName>{staff.name}</StaffName>
         <StaffEmail>{staff.email}</StaffEmail>
