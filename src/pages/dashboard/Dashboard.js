@@ -1,23 +1,39 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
+import {
+  TotalLeave,
+  Rejected,
+  Pending,
+  Approve,
+  Empty,
+} from "../../Utils/images";
 import { Employee } from "../../Utils/images";
 import { Select } from "antd";
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import { getEmployeeList, getLeaveCount } from "../../Services/Collection";
 import { toast } from "react-toastify";
+import MainLoader from "../../components/MainLoader";
+import { Pagination } from 'antd';
 const { Option } = Select;
 
 const Dashboard = () => {
   const [selectedRole, setSelectedRole] = useState("All");
   const [staffList, setStaffList] = useState([]);
+  const [leaveCount, setLeaveCount] = useState({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false); 
+  const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
+    setError(false); 
     try {
-      const res = await getEmployeeList();
-      console.log(res, "emoloyee lits response ");
+      let params = new URLSearchParams();
+      params.append("role", selectedRole);
+      params.append("page", currentPage);
+      params.append("limit", itemsPerPage);
+      const res = await getEmployeeList(params);
       if (res?.status === 200) {
         setStaffList(res?.data);
       } else {
@@ -27,31 +43,36 @@ const Dashboard = () => {
           res?.error ||
           "Something went wrong";
         setStaffList([]);
+        setError(true); 
         toast.error(message);
       }
     } catch (error) {
+      setError(true); 
       toast.error(error?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
   const fetchGetLeaveCount = async () => {
     setLoading(true);
+    setError(false); 
     try {
       const res = await getLeaveCount();
-      console.log(res, "leave count ");
       if (res?.status === 200) {
-        // setStaffList(res?.data);
+        setLeaveCount(res?.data);
       } else {
         let message =
           res?.response?.data?.message ||
           res?.message ||
           res?.error ||
           "Something went wrong";
-        setStaffList([]);
+        setLeaveCount({});
+        setError(true); 
         toast.error(message);
       }
     } catch (error) {
+      setError(true); 
       toast.error(error?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -61,11 +82,18 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
     fetchGetLeaveCount();
-  }, []);
+  }, [selectedRole, currentPage, itemsPerPage]);
 
   const handleRoleChange = (value) => {
     setSelectedRole(value);
+    setCurrentPage(1); 
   };
+
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
 
   const filteredStaffList =
     selectedRole === "All"
@@ -73,76 +101,96 @@ const Dashboard = () => {
       : staffList.filter((staff) => staff.role === selectedRole);
 
   const data = [
-    { name: "Total Leave", value: 123 },
-    { name: "Rejected Leave", value: 45 },
-    { name: "Approved Leave", value: 67 },
-    { name: "Pending Leave", value: 12 },
+    { name: "Total Leave", value: leaveCount?.total },
+    { name: "Rejected Leave", value: leaveCount?.rejected },
+    { name: "Approved Leave", value: leaveCount?.approved },
+    { name: "Pending Leave", value: leaveCount?.pending },
   ];
 
   const COLORS = ["#8884d8", "#ff6f61", "#4caf50", "#ffc107"];
+
   return (
     <DashboardWrapper>
       <Title>Dashboard</Title>
-      <MetricsContainer>
-        <Metric>
-          <MetricImage src={TotalLeave} alt="Total Leave" />
-          <MetricValue>123</MetricValue>
-          <MetricTitle>Total Leave</MetricTitle>
-        </Metric>
-        <Metric>
-          <MetricImage src={Rejected} alt="Rejected" />
-          <MetricValue>45</MetricValue>
-          <MetricTitle>Rejected Leave</MetricTitle>
-        </Metric>
-        <Metric>
-          <MetricImage src={Approve} alt="Approved" />
-          <MetricValue>67</MetricValue>
-          <MetricTitle>Approved Leave</MetricTitle>
-        </Metric>
-        <Metric>
-          <MetricImage src={Pending} alt="Pending" />
-          <MetricValue>12</MetricValue>
-          <MetricTitle>Pending Leave</MetricTitle>
-        </Metric>
-      </MetricsContainer>
 
-      <ChartSection>
-        <ChartTitle>Leave Statistics</ChartTitle>
-        <PieChart width={400} height={400} className="pie-chart">
-          <Pie
-            data={data}
-            dataKey="value"
-            outerRadius={150}
-            innerRadius={80}
-            fill="#8884d8"
-            label
-          >
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
+      {loading ? (
+        <LoaderWrapper>
+        <MainLoader />
+      </LoaderWrapper>
+      ) : error || staffList.length === 0 ? (
+        <NoDataFound>
+          <NoDataIconWrapper>
+            <img src={Empty} alt="No Data" />
+          </NoDataIconWrapper>
+          <NoDataText>No Data Found</NoDataText>
+        </NoDataFound>
+      ) : (
+        <>
+          <MetricsContainer>
+            <Metric>
+              <MetricImage src={TotalLeave} alt="Total Leave" />
+              <MetricValue>{leaveCount?.total}</MetricValue>
+              <MetricTitle>Total Leave</MetricTitle>
+            </Metric>
+            <Metric>
+              <MetricImage src={Rejected} alt="Rejected" />
+              <MetricValue>{leaveCount?.rejected}</MetricValue>
+              <MetricTitle>Rejected Leave</MetricTitle>
+            </Metric>
+            <Metric>
+              <MetricImage src={Approve} alt="Approved" />
+              <MetricValue>{leaveCount?.approved}</MetricValue>
+              <MetricTitle>Approved Leave</MetricTitle>
+            </Metric>
+            <Metric>
+              <MetricImage src={Pending} alt="Pending" />
+              <MetricValue>{leaveCount?.pending}</MetricValue>
+              <MetricTitle>Pending Leave</MetricTitle>
+            </Metric>
+          </MetricsContainer>
+
+          <ChartSection>
+            <ChartTitle>Leave Statistics</ChartTitle>
+            <PieChart width={400} height={400} className="pie-chart">
+              <Pie
+                data={data}
+                dataKey="value"
+                outerRadius={150}
+                innerRadius={80}
+                fill="#8884d8"
+                label
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ChartSection>
+
+          <TeamSection>
+            <TeamTitle>Team Overview</TeamTitle>
+            <StaffSection>
+              <div className="staff-header">
+                <StaffTitle>Staff List</StaffTitle>
+                <FilterDropdown onChange={handleRoleChange} />
+              </div>
+              <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
+              <Pagination
+                current={currentPage}
+                pageSize={itemsPerPage}
+                total={staffList.length}
+                onChange={handlePageChange}
+                showSizeChanger={false}
               />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ChartSection>
-
-      <TeamSection>
-        <TeamTitle>Team Overview</TeamTitle>
-        <StaffSection>
-          <div className="staff-header">
-            <StaffTitle>Staff List</StaffTitle>
-            <FilterDropdown onChange={handleRoleChange} />
-          </div>
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
-          )}
-        </StaffSection>
-      </TeamSection>
+            </StaffSection>
+          </TeamSection>
+        </>
+      )}
     </DashboardWrapper>
   );
 };
@@ -162,9 +210,11 @@ const FilterDropdown = ({ onChange }) => {
 const generateStaffList = (staffList) => {
   return staffList.map((staff, index) => (
     <StaffItem key={`staff-${index}`}>
-      <Avatar src={staff.avatar || Employee} alt={`Staff ${index + 1}`} />
+      <Avatar src={staff.profile_img || Employee} alt={`Staff ${index + 1}`} />
       <StaffDetails>
-        <StaffName>{staff.name}</StaffName>
+        <StaffName>
+          {staff.first_name} {staff.last_name}
+        </StaffName>
         <StaffEmail>{staff.email}</StaffEmail>
       </StaffDetails>
       <StaffRole>{staff.role}</StaffRole>
@@ -325,4 +375,41 @@ const ChartTitle = styled.h2`
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
+`;
+
+const NoDataFound = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #888;
+`;
+
+const NoDataIconWrapper = styled.div`
+  margin-bottom: 10px;
+  img {
+    width: 50px;
+    height: 50px;
+  }
+`;
+
+const NoDataText = styled.p`
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+`;
+
+const LoaderWrapper = styled.div`
+  margin-top: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  .loader {
+    height: 50px;
+    width: 40px;
+  }
 `;

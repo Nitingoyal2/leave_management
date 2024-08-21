@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Dropdown, Menu } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { authlogout } from "../../Store/Authentication";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -17,6 +17,10 @@ const Header = () => {
     toast.success("Logout Successful");
   };
 
+  const LoggedUserdata = useSelector((state) => state?.Authlogin?.data);
+  const capitalizeFirstLetter = (name) =>
+    name ? name.charAt(0).toUpperCase() + name.slice(1) : "";
+  const getInitial = (name) => (name ? name.charAt(0).toUpperCase() : "");
   const menu = (
     <StyledMenu>
       <Menu.Item key="0" onClick={handleLogout}>
@@ -33,16 +37,25 @@ const Header = () => {
     <HeaderWrapper>
       <RightDiv>
         <Text>
-          <Name>Nitin Kumar</Name>
-          <EmpId>Emp ID: 587</EmpId>
+          <Name>
+            {capitalizeFirstLetter(LoggedUserdata?.first_name)}{" "}
+            {LoggedUserdata?.last_name}
+          </Name>
+          <EmpId>Emp ID: {LoggedUserdata?.employee_id}</EmpId>
         </Text>
         <Dropdown overlay={menu} trigger={["click"]}>
           <AvatarDiv
             className="ant-dropdown-link"
             onClick={(e) => e.preventDefault()}
           >
-            <AvatarP>N</AvatarP>
-            <CaretDownOutlined onClick={() => console.log("clicked")} />
+            <AvatarP>
+              {LoggedUserdata?.profile_img ? (
+                <AvatarImg src={LoggedUserdata?.profile_img} alt="Avatar" />
+              ) : (
+                getInitial(LoggedUserdata?.first_name)
+              )}
+            </AvatarP>
+            <CaretDownOutlined />
           </AvatarDiv>
         </Dropdown>
       </RightDiv>
@@ -127,4 +140,10 @@ const Name = styled.p`
 const EmpId = styled.span`
   font-size: 14px;
   color: #616161;
+`;
+const AvatarImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 50%;
 `;

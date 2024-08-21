@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
   Dashboard,
@@ -19,14 +19,50 @@ import {
 } from "../../Utils/images";
 import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SideBar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [openMenu, setOpenMenu] = useState("");
   const [activeMenu, setActiveMenu] = useState("");
   const [activeSubMenu, setActiveSubMenu] = useState("");
+
+  // Update active menu and submenu based on the current route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith("/dashboard")) {
+      setActiveMenu("dashboard");
+      setActiveSubMenu("");
+      setOpenMenu("");
+    } else if (path.startsWith("/department")) {
+      setActiveMenu("department");
+      setActiveSubMenu(path.includes("Add") ? "departmentAdd" : "departmentList");
+      setOpenMenu("department");
+    } else if (path.startsWith("/leaveType")) {
+      setActiveMenu("leaveType");
+      setActiveSubMenu(path.includes("Add") ? "leaveTypeAdd" : "leaveTypeList");
+      setOpenMenu("leaveType");
+    } else if (path.startsWith("/employee")) {
+      setActiveMenu("employee");
+      setActiveSubMenu(path.includes("Add") ? "employeeAdd" : "employeeList");
+      setOpenMenu("employee");
+    } else if (path.startsWith("/leave")) {
+      setActiveMenu("leave");
+      if (path.includes("Pending")) {
+        setActiveSubMenu("leavePending");
+      } else if (path.includes("Approved")) {
+        setActiveSubMenu("leaveApproved");
+      } else if (path.includes("Rejected")) {
+        setActiveSubMenu("leaveRejected");
+      } else {
+        setActiveSubMenu(path.includes("newLeave") ? "newLeave" : "leaveList");
+      }
+      setOpenMenu("leave");
+    }
+  }, [location.pathname]);
+
   const toggleMenu = (menuName) => {
     setSidebarOpen(true);
     setOpenMenu((prevMenu) => (prevMenu === menuName ? "" : menuName));
@@ -276,11 +312,7 @@ const SideBar = () => {
                 handleNavigation("/newLeave", "leave", "newLeave")
               }
             >
-              <img
-                src={LeaveTypeAdd}
-                alt="new-leave-icon"
-                className="menu-icons"
-              />
+              <img src={leaveList} alt="new-leave" className="menu-icons" />
               <span>New Leave</span>
             </SubMenuItem>
             <SubMenuItem
@@ -289,11 +321,7 @@ const SideBar = () => {
                 handleNavigation("/leaveList", "leave", "leaveList")
               }
             >
-              <img
-                src={leaveList}
-                alt="leave-list-icon"
-                className="menu-icons"
-              />
+              <img src={leaveList} alt="leave-list" className="menu-icons" />
               <span>Leave List</span>
             </SubMenuItem>
             <SubMenuItem
@@ -302,12 +330,8 @@ const SideBar = () => {
                 handleNavigation("/leavePending", "leave", "leavePending")
               }
             >
-              <img
-                src={leaveList}
-                alt="leave-pending-icon"
-                className="menu-icons"
-              />
-              <span>Leave Pending</span>
+              <img src={leaveList} alt="leave-pending" className="menu-icons" />
+              <span>Pending</span>
             </SubMenuItem>
             <SubMenuItem
               isActive={activeSubMenu === "leaveApproved"}
@@ -315,12 +339,8 @@ const SideBar = () => {
                 handleNavigation("/leaveApproved", "leave", "leaveApproved")
               }
             >
-              <img
-                src={leaveList}
-                alt="leave-approved-icon"
-                className="menu-icons"
-              />
-              <span>Leave Approved</span>
+              <img src={leaveList} alt="leave-approved" className="menu-icons" />
+              <span>Approved</span>
             </SubMenuItem>
             <SubMenuItem
               isActive={activeSubMenu === "leaveRejected"}
@@ -328,12 +348,8 @@ const SideBar = () => {
                 handleNavigation("/leaveRejected", "leave", "leaveRejected")
               }
             >
-              <img
-                src={leaveList}
-                alt="leave-reject-icon"
-                className="menu-icons"
-              />
-              <span>Leave Rejected</span>
+              <img src={leaveList} alt="leave-rejected" className="menu-icons" />
+              <span>Rejected</span>
             </SubMenuItem>
           </SubMenu>
         )}
@@ -341,6 +357,7 @@ const SideBar = () => {
     </SideNavWrapper>
   );
 };
+
 export default SideBar;
 
 const SideNavWrapper = styled.div`

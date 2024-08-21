@@ -40,7 +40,7 @@ const CreateDepartment = () => {
     console.log("payload", payload);
     setLoading(true);
     try {
-      let res = AddDepartmentApi(payload);
+      let res = await AddDepartmentApi(payload);
       console.log(res, "api response");
       if (res?.status === 200) {
         toast.success("Department Added Successfully");
@@ -54,9 +54,10 @@ const CreateDepartment = () => {
         toast.error(message);
       }
     } catch (error) {
-      toast.error(error?.message || "Something went wrong");
+      toast.error(error?.message);
     } finally {
       setLoading(false);
+      resetForm();
     }
   };
 
@@ -104,6 +105,8 @@ const CreateDepartment = () => {
             <FormGroup>
               <Label htmlFor="deptDetails">Department Details</Label>
               <ReactQuill
+                id="deptDetails"
+                name="deptDetails"
                 theme="snow"
                 value={values.deptDetails}
                 onChange={(content, delta, source, editor) => {

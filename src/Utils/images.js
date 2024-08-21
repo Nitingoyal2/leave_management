@@ -21,6 +21,7 @@ import leaveList from "../assets/images/leavelistt.png";
 import Edit from "../assets/images/edit.png";
 import Delete from "../assets/images/delete.png";
 import BackgroundImg from "../assets/images/BackgroundImg.png";
+import Empty from "../assets/images/empty.png";
 
 export {
   AuthBacgroundImg,
@@ -46,4 +47,5 @@ export {
   Edit,
   Delete,
   BackgroundImg,
+  Empty
 };

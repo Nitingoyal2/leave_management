@@ -17,6 +17,6 @@ export const AddLeaveApi = (payload) => postApi(AddLeave, payload);
 // delete api
 
 // get api
-export const getEmployeeList = () => getApi(EmployeeList);
+export const getEmployeeList = (query) => getApi(`${EmployeeList}?${query}`);
 export const getDepartmentList = () => getApi(DepartmentList);
 export const getLeaveCount = () => getApi(LeaveList);
