@@ -19,17 +19,14 @@ const Login = () => {
   };
 
   const validationSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email("Email must be a valid email")
-      .required("Email is required"),
+    email: yup.string().required("Email is required"),
     password: yup.string().required("Password is required"),
   });
 
   const handleSubmit = async (values) => {
     console.log(values, "values");
     const payload = {
-      email: values?.email,
+      employee_id: values?.email,
       password: values?.password,
     };
     console.log(payload, "payload");
@@ -84,7 +81,7 @@ const Login = () => {
                     <FormGroup>
                       <Label htmlFor="email">Email</Label>
                       <StyledField
-                        type="email"
+                        type="text"
                         id="email"
                         name="email"
                         placeholder="Enter email"

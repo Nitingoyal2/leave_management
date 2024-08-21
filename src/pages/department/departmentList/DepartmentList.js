@@ -164,16 +164,16 @@ const DepartmentList = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await getDepartmentList();
-      if (response.status === 200) {
-        setData(response.data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await getDepartmentList();
+  //     if (response.status === 200) {
+  //       setData(response.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const handleStatusClick = (record) => {
     setSelectedDept(record);
     setSelectedStatus(record.deptStatus);
@@ -283,9 +283,9 @@ const DepartmentList = () => {
     setDeleteModalVisible(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <DepartmentWrapper>
