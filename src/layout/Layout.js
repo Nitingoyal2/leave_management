@@ -36,6 +36,9 @@ const SideNavWrapper = styled.div`
   background: rgb(255, 255, 255);
   box-shadow: rgba(0, 0, 0, 0.25) 0px 10px 20px;
   color: rgb(0, 0, 0);
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MainWrapper = styled.div`

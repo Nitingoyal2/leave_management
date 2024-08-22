@@ -13,7 +13,7 @@ import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import { getEmployeeList, getLeaveCount } from "../../Services/Collection";
 import { toast } from "react-toastify";
 import MainLoader from "../../components/MainLoader";
-import { Pagination } from 'antd';
+import { Pagination } from "antd";
 const { Option } = Select;
 
 const Dashboard = () => {
@@ -21,13 +21,13 @@ const Dashboard = () => {
   const [staffList, setStaffList] = useState([]);
   const [leaveCount, setLeaveCount] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false); 
+  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
-    setError(false); 
+    setError(false);
     try {
       let params = new URLSearchParams();
       params.append("role", selectedRole);
@@ -43,11 +43,11 @@ const [itemsPerPage] = useState(10);
           res?.error ||
           "Something went wrong";
         setStaffList([]);
-        setError(true); 
+        setError(true);
         toast.error(message);
       }
     } catch (error) {
-      setError(true); 
+      setError(true);
       toast.error(error?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ const [itemsPerPage] = useState(10);
 
   const fetchGetLeaveCount = async () => {
     setLoading(true);
-    setError(false); 
+    setError(false);
     try {
       const res = await getLeaveCount();
       if (res?.status === 200) {
@@ -68,11 +68,11 @@ const [itemsPerPage] = useState(10);
           res?.error ||
           "Something went wrong";
         setLeaveCount({});
-        setError(true); 
+        setError(true);
         toast.error(message);
       }
     } catch (error) {
-      setError(true); 
+      setError(true);
       toast.error(error?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -86,14 +86,12 @@ const [itemsPerPage] = useState(10);
 
   const handleRoleChange = (value) => {
     setSelectedRole(value);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
-
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
 
   const filteredStaffList =
     selectedRole === "All"
@@ -101,10 +99,10 @@ const [itemsPerPage] = useState(10);
       : staffList.filter((staff) => staff.role === selectedRole);
 
   const data = [
-    { name: "Total Leave", value: leaveCount?.total },
-    { name: "Rejected Leave", value: leaveCount?.rejected },
-    { name: "Approved Leave", value: leaveCount?.approved },
-    { name: "Pending Leave", value: leaveCount?.pending },
+    { name: "Total Leave", value: leaveCount?.totalLeaves },
+    { name: "Rejected Leave", value: leaveCount?.rejectedLeaves },
+    { name: "Approved Leave", value: leaveCount?.approvedLeaves },
+    { name: "Pending Leave", value: leaveCount?.pendingLeaves },
   ];
 
   const COLORS = ["#8884d8", "#ff6f61", "#4caf50", "#ffc107"];
@@ -115,8 +113,8 @@ const [itemsPerPage] = useState(10);
 
       {loading ? (
         <LoaderWrapper>
-        <MainLoader />
-      </LoaderWrapper>
+          <MainLoader />
+        </LoaderWrapper>
       ) : error || staffList.length === 0 ? (
         <NoDataFound>
           <NoDataIconWrapper>
@@ -129,22 +127,22 @@ const [itemsPerPage] = useState(10);
           <MetricsContainer>
             <Metric>
               <MetricImage src={TotalLeave} alt="Total Leave" />
-              <MetricValue>{leaveCount?.total}</MetricValue>
+              <MetricValue>{leaveCount?.totalLeaves}</MetricValue>
               <MetricTitle>Total Leave</MetricTitle>
             </Metric>
             <Metric>
               <MetricImage src={Rejected} alt="Rejected" />
-              <MetricValue>{leaveCount?.rejected}</MetricValue>
+              <MetricValue>{leaveCount?.rejectedLeaves}</MetricValue>
               <MetricTitle>Rejected Leave</MetricTitle>
             </Metric>
             <Metric>
               <MetricImage src={Approve} alt="Approved" />
-              <MetricValue>{leaveCount?.approved}</MetricValue>
+              <MetricValue>{leaveCount?.approvedLeaves}</MetricValue>
               <MetricTitle>Approved Leave</MetricTitle>
             </Metric>
             <Metric>
               <MetricImage src={Pending} alt="Pending" />
-              <MetricValue>{leaveCount?.pending}</MetricValue>
+              <MetricValue>{leaveCount?.pendingLeaves}</MetricValue>
               <MetricTitle>Pending Leave</MetricTitle>
             </Metric>
           </MetricsContainer>

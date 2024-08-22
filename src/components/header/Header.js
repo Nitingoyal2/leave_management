@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Dropdown, Menu } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons";
+import { CaretDownOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { authlogout } from "../../Store/Authentication";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +35,9 @@ const Header = () => {
 
   return (
     <HeaderWrapper>
+      <LeftDiv>
+        <MenuFoldOutlined />
+      </LeftDiv>
       <RightDiv>
         <Text>
           <Name>
@@ -74,6 +77,20 @@ const HeaderWrapper = styled.div`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+  }
+  @media (max-width: 768px) {
+    justify-content: space-between;
+  }
+`;
+//add media query in left div above of 768 display none
+
+const LeftDiv = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  @media (min-width: 768px) {
+    display: none;
   }
 `;
 
@@ -144,6 +161,6 @@ const EmpId = styled.span`
 const AvatarImg = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
   border-radius: 50%;
 `;
