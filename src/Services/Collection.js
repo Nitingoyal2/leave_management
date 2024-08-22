@@ -8,6 +8,7 @@ const DepartmentList = "employee/departmentList";
 const AddEmployee = "employee/registerEmployee";
 const EmployeeList = "employee/employeeList";
 const AddLeave = "leave/createLeave";
+const GetEmployeeRoleAll = "employee/getEmployeeByRole"
 // post api
 export const AdminLogin = (payload) => postApi(Login, payload);
 export const AddDepartmentApi = (payload) => postApi(AddDepartment, payload);
@@ -20,3 +21,4 @@ export const AddLeaveApi = (payload) => postApi(AddLeave, payload);
 export const getEmployeeList = (query) => getApi(`${EmployeeList}?${query}`);
 export const getDepartmentList = () => getApi(DepartmentList);
 export const getLeaveCount = () => getApi(LeaveList);
+export const getEmployeeByRole = (query) => getApi(`${GetEmployeeRoleAll}?${query}`);

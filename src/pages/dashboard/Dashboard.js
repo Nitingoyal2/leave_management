@@ -1,33 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import {
-  TotalLeave,
-  Rejected,
-  Pending,
-  Approve,
-  Empty,
-} from "../../Utils/images";
+import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
 import { Employee } from "../../Utils/images";
-import { Select } from "antd";
+import { Select, Table } from "antd";
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import { getEmployeeList, getLeaveCount } from "../../Services/Collection";
 import { toast } from "react-toastify";
-import MainLoader from "../../components/MainLoader";
-import { Pagination } from "antd";
 const { Option } = Select;
 
 const Dashboard = () => {
   const [selectedRole, setSelectedRole] = useState("All");
   const [staffList, setStaffList] = useState([]);
   const [leaveCount, setLeaveCount] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const fetchData = async () => {
-    setLoading(true);
-    setError(false);
     try {
       let params = new URLSearchParams();
       params.append("role", selectedRole);
@@ -43,24 +32,20 @@ const Dashboard = () => {
           res?.error ||
           "Something went wrong";
         setStaffList([]);
-        setError(true);
         toast.error(message);
       }
     } catch (error) {
-      setError(true);
       toast.error(error?.message || "Something went wrong");
     } finally {
-      setLoading(false);
     }
   };
 
   const fetchGetLeaveCount = async () => {
-    setLoading(true);
-    setError(false);
     try {
       const res = await getLeaveCount();
       if (res?.status === 200) {
         setLeaveCount(res?.data);
+        setTotalItems(res?.data.total);
       } else {
         let message =
           res?.response?.data?.message ||
@@ -68,14 +53,12 @@ const Dashboard = () => {
           res?.error ||
           "Something went wrong";
         setLeaveCount({});
-        setError(true);
+        setTotalItems(0);
         toast.error(message);
       }
     } catch (error) {
-      setError(true);
       toast.error(error?.message || "Something went wrong");
     } finally {
-      setLoading(false);
     }
   };
 
@@ -92,6 +75,10 @@ const Dashboard = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
 
   const filteredStaffList =
     selectedRole === "All"
@@ -107,117 +94,142 @@ const Dashboard = () => {
 
   const COLORS = ["#8884d8", "#ff6f61", "#4caf50", "#ffc107"];
 
+  const columns = [
+    {
+      title: "Avatar",
+      dataIndex: "profile_img",
+      key: "avatar",
+      render: (text, record) => (
+        <Avatar src={record.profile_img || Employee} alt="Avatar" />
+      ),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <StaffName>{`${record.first_name} ${record.last_name}`}</StaffName>
+      ),
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+  ];
+
+  const paginationConfig = {
+    current: currentPage,
+    pageSize: itemsPerPage,
+    total: totalItems,
+    onChange: handlePageChange,
+    onShowSizeChange: (current, size) => {
+      handleItemsPerPageChange(size);
+    },
+    showSizeChanger: true,
+    pageSizeOptions: ["5", "10", "15", "20"],
+    showTotal: (total, range) =>
+      `Showing ${range[0]}-${range[1]} of ${total} items`,
+  };
+
   return (
     <DashboardWrapper>
       <Title>Dashboard</Title>
 
-      {loading ? (
-        <LoaderWrapper>
-          <MainLoader />
-        </LoaderWrapper>
-      ) : error || staffList.length === 0 ? (
-        <NoDataFound>
-          <NoDataIconWrapper>
-            <img src={Empty} alt="No Data" />
-          </NoDataIconWrapper>
-          <NoDataText>No Data Found</NoDataText>
-        </NoDataFound>
-      ) : (
-        <>
-          <MetricsContainer>
-            <Metric>
-              <MetricImage src={TotalLeave} alt="Total Leave" />
-              <MetricValue>{leaveCount?.totalLeaves}</MetricValue>
-              <MetricTitle>Total Leave</MetricTitle>
-            </Metric>
-            <Metric>
-              <MetricImage src={Rejected} alt="Rejected" />
-              <MetricValue>{leaveCount?.rejectedLeaves}</MetricValue>
-              <MetricTitle>Rejected Leave</MetricTitle>
-            </Metric>
-            <Metric>
-              <MetricImage src={Approve} alt="Approved" />
-              <MetricValue>{leaveCount?.approvedLeaves}</MetricValue>
-              <MetricTitle>Approved Leave</MetricTitle>
-            </Metric>
-            <Metric>
-              <MetricImage src={Pending} alt="Pending" />
-              <MetricValue>{leaveCount?.pendingLeaves}</MetricValue>
-              <MetricTitle>Pending Leave</MetricTitle>
-            </Metric>
-          </MetricsContainer>
+      <>
+        <MetricsContainer>
+          <Metric>
+            <MetricImage src={TotalLeave} alt="Total Leave" />
+            <MetricValue>{leaveCount?.totalLeaves}</MetricValue>
+            <MetricTitle>Total Leave</MetricTitle>
+          </Metric>
+          <Metric>
+            <MetricImage src={Rejected} alt="Rejected" />
+            <MetricValue>{leaveCount?.rejectedLeaves}</MetricValue>
+            <MetricTitle>Rejected Leave</MetricTitle>
+          </Metric>
+          <Metric>
+            <MetricImage src={Approve} alt="Approved" />
+            <MetricValue>{leaveCount?.approvedLeaves}</MetricValue>
+            <MetricTitle>Approved Leave</MetricTitle>
+          </Metric>
+          <Metric>
+            <MetricImage src={Pending} alt="Pending" />
+            <MetricValue>{leaveCount?.pendingLeaves}</MetricValue>
+            <MetricTitle>Pending Leave</MetricTitle>
+          </Metric>
+        </MetricsContainer>
 
-          <ChartSection>
-            <ChartTitle>Leave Statistics</ChartTitle>
-            <PieChart width={400} height={400} className="pie-chart">
-              <Pie
-                data={data}
-                dataKey="value"
-                outerRadius={150}
-                innerRadius={80}
-                fill="#8884d8"
-                label
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ChartSection>
+        <ChartSection>
+          <ChartTitle>Leave Statistics</ChartTitle>
+          <PieChart width={400} height={400} className="pie-chart">
+            <Pie
+              data={data}
+              dataKey="value"
+              outerRadius={150}
+              innerRadius={80}
+              fill="#8884d8"
+              label
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </ChartSection>
 
-          <TeamSection>
-            <TeamTitle>Team Overview</TeamTitle>
-            <StaffSection>
-              <div className="staff-header">
-                <StaffTitle>Staff List</StaffTitle>
-                <FilterDropdown onChange={handleRoleChange} />
-              </div>
-              <StaffList>{generateStaffList(filteredStaffList)}</StaffList>
-              <Pagination
-                current={currentPage}
-                pageSize={itemsPerPage}
-                total={staffList.length}
-                onChange={handlePageChange}
-                showSizeChanger={false}
-              />
-            </StaffSection>
-          </TeamSection>
-        </>
-      )}
+        <TeamSection>
+          <TeamTitle>Team Overview</TeamTitle>
+          <StaffSection>
+            <div className="staff-header">
+              <StaffTitle>Staff List</StaffTitle>
+              <FilterDropdown onChange={handleRoleChange} />
+            </div>
+            <Table
+              dataSource={filteredStaffList}
+              columns={columns}
+              rowKey="email"
+              pagination={paginationConfig}
+            />
+          </StaffSection>
+        </TeamSection>
+      </>
     </DashboardWrapper>
   );
 };
 
 const FilterDropdown = ({ onChange }) => {
   return (
-    <Select defaultValue="All" style={{ width: 200 }} onChange={onChange}>
-      <Option value="All">All Roles</Option>
-      <Option value="Web">Web</Option>
-      <Option value="Backend">Backend</Option>
-      <Option value="Python">Python</Option>
-      <Option value="iOS">iOS</Option>
+    <Select
+    defaultValue="all"
+    style={{ width: 200 }}
+    onChange={onChange}
+    showSearch
+    placeholder="Select a role"
+    optionFilterProp="children"
+    onSearch={(value) => console.log(value)} 
+    >
+      <Option value="all">All Roles</Option>
+      <Option value="web">Web</Option>
+      <Option value="android">Android</Option>
+      <Option value="ios">iOS</Option>
+      <Option value="python">Python</Option>
+      <Option value="backend">Backend</Option>
+      <Option value="ui/ux">UI/UX</Option>
+      <Option value="business analysis">Business Analysis</Option>
+      <Option value="hr">HR</Option>
     </Select>
   );
-};
-
-const generateStaffList = (staffList) => {
-  return staffList.map((staff, index) => (
-    <StaffItem key={`staff-${index}`}>
-      <Avatar src={staff.profile_img || Employee} alt={`Staff ${index + 1}`} />
-      <StaffDetails>
-        <StaffName>
-          {staff.first_name} {staff.last_name}
-        </StaffName>
-        <StaffEmail>{staff.email}</StaffEmail>
-      </StaffDetails>
-      <StaffRole>{staff.role}</StaffRole>
-    </StaffItem>
-  ));
 };
 
 export default Dashboard;
@@ -316,49 +328,16 @@ const StaffTitle = styled.h3`
   color: #333;
 `;
 
-const StaffList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-
-const StaffItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
 const Avatar = styled.img`
   width: 50px;
   height: 50px;
   border-radius: 50%;
 `;
 
-const StaffDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin: 0px 20px;
-`;
-
 const StaffName = styled.div`
   font-size: 16px;
   font-weight: 600;
   color: #333;
-`;
-
-const StaffEmail = styled.div`
-  font-size: 14px;
-  color: #555;
-`;
-
-const StaffRole = styled.div`
-  font-size: 14px;
-  color: #777;
 `;
 
 const ChartSection = styled.div`
@@ -373,41 +352,4 @@ const ChartTitle = styled.h2`
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
-`;
-
-const NoDataFound = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  color: #888;
-`;
-
-const NoDataIconWrapper = styled.div`
-  margin-bottom: 10px;
-  img {
-    width: 50px;
-    height: 50px;
-  }
-`;
-
-const NoDataText = styled.p`
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-`;
-
-const LoaderWrapper = styled.div`
-  margin-top: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  .loader {
-    height: 50px;
-    width: 40px;
-  }
 `;
