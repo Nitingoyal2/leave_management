@@ -6,8 +6,12 @@ import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
 import StatusModal from "../../../components/modal/statusModal/StatusModal";
 import { getDepartmentList } from "../../../Services/Collection";
+import { useNavigate } from "react-router-dom";
+import DepartmentEditModal from "../../../components/modal/departmentEditModal/DepartmentEditModal";
 
 const DepartmentList = () => {
+const navigate = useNavigate()
+
   const [data, setData] = useState([
     {
       key: "1",
@@ -157,6 +161,8 @@ const DepartmentList = () => {
   const [statusModalVisible, setStatusModalVisible] = useState(false);
   const [selectedDept, setSelectedDept] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+const [selectedDeptForEdit, setSelectedDeptForEdit] = useState(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -196,6 +202,55 @@ const DepartmentList = () => {
     setSelectedDept(null);
     setStatusModalVisible(false);
   };
+
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value.toLowerCase());
+  };
+
+  const filteredData = data.filter((item) =>
+    item.deptName.toLowerCase().includes(searchText)
+  );
+  const handleTableChange = (pagination) => {
+    setPagination(pagination);
+  };
+
+  const handleDelete = (record) => {
+    setSelectedDept(record);
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedDept) {
+      console.log(`Deleting department: ${selectedDept.deptName}`);
+      setData(data.filter((item) => item.key !== selectedDept.key));
+      setSelectedDept(null);
+      setDeleteModalVisible(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setSelectedDept(null);
+    setDeleteModalVisible(false);
+  };
+
+
+  const handleEdit = (record) => {
+    setSelectedDeptForEdit(record);
+    setEditModalVisible(true);
+  };
+
+
+  const confirmEdit = (updatedDept) => {
+    const updatedData = data.map((dept) =>
+      dept.key === selectedDeptForEdit.key
+        ? { ...dept, ...updatedDept }
+        : dept
+    );
+    setData(updatedData);
+    setEditModalVisible(false);
+  };
+
 
   const columns = [
     {
@@ -238,7 +293,7 @@ const DepartmentList = () => {
       render: (text, record) => (
         <div className="actionDiv">
           <span>
-            <img src={Edit} alt="edit" className="action-icon" />
+            <img src={Edit} alt="edit" className="action-icon"  onClick={() => handleEdit(record)}/>
           </span>
           <span>
             <img
@@ -252,36 +307,6 @@ const DepartmentList = () => {
       ),
     },
   ];
-
-  const handleSearch = (e) => {
-    setSearchText(e.target.value.toLowerCase());
-  };
-
-  const filteredData = data.filter((item) =>
-    item.deptName.toLowerCase().includes(searchText)
-  );
-  const handleTableChange = (pagination) => {
-    setPagination(pagination);
-  };
-
-  const handleDelete = (record) => {
-    setSelectedDept(record);
-    setDeleteModalVisible(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedDept) {
-      console.log(`Deleting department: ${selectedDept.deptName}`);
-      setData(data.filter((item) => item.key !== selectedDept.key));
-      setSelectedDept(null);
-      setDeleteModalVisible(false);
-    }
-  };
-
-  const cancelDelete = () => {
-    setSelectedDept(null);
-    setDeleteModalVisible(false);
-  };
 
   // useEffect(() => {
   //   fetchData();
@@ -333,6 +358,12 @@ const DepartmentList = () => {
         onCancel={cancelStatusChange}
         itemName={selectedDept?.deptName}
       />
+      <DepartmentEditModal
+  visible={editModalVisible}
+  onConfirm={confirmEdit}
+  onCancel={() => setEditModalVisible(false)}
+  department={selectedDeptForEdit}
+/>
     </DepartmentWrapper>
   );
 };

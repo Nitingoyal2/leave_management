@@ -5,6 +5,7 @@ import { RightOutlined } from "@ant-design/icons";
 import { Delete, Edit } from "../../../Utils/images";
 import DeleteModal from "../../../components/modal/deleteModal/DeleteModal";
 import StatusModal from "../../../components/modal/statusModal/StatusModal";
+import LeaveTypeEditModal from "../../../components/modal/leaveTypeEditmodal/ListTypeEditModal";
 
 const LeaveTypeList = () => {
   const [data, setData] = useState([
@@ -30,6 +31,8 @@ const LeaveTypeList = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [statusModalVisible, setStatusModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [selectedLeaveTyeForEdit, setSelectedLeaveTyeForEdit] = useState(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -101,7 +104,7 @@ const LeaveTypeList = () => {
       render: (text, record) => (
         <div className="actionDiv">
           <span>
-            <img src={Edit} alt="edit" className="action-icon" />
+            <img src={Edit} alt="edit" className="action-icon" onClick={() => handleEdit(record)}/>
           </span>
           <span>
             <img
@@ -141,6 +144,21 @@ const LeaveTypeList = () => {
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setSelectedItem(null);
+  };
+
+  const handleEdit = (record) => {
+    setSelectedLeaveTyeForEdit(record);
+    setEditModalVisible(true);
+  };
+
+  const confirmEdit = (updatedDept) => {
+    const updatedData = data.map((dept) =>
+      dept.key === selectedLeaveTyeForEdit.key
+        ? { ...dept, ...updatedDept }
+        : dept
+    );
+    setData(updatedData);
+    setEditModalVisible(false);
   };
 
   return (
@@ -187,6 +205,12 @@ const LeaveTypeList = () => {
         onConfirm={confirmStatusChange}
         onCancel={cancelStatusChange}
         itemName={selectedItem?.leaveTypeName}
+      />
+      <LeaveTypeEditModal
+        visible={editModalVisible}
+        onConfirm={confirmEdit}
+        onCancel={() => setEditModalVisible(false)}
+        department={selectedLeaveTyeForEdit}
       />
     </LeaveTypeWrapper>
   );

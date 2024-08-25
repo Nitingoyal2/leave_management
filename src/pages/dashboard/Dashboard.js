@@ -4,7 +4,11 @@ import { TotalLeave, Rejected, Pending, Approve } from "../../Utils/images";
 import { Employee } from "../../Utils/images";
 import { Select, Table } from "antd";
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
-import { getEmployeeList, getLeaveCount } from "../../Services/Collection";
+import {
+  getDepartmentList,
+  getEmployeeList,
+  getLeaveCount,
+} from "../../Services/Collection";
 import { toast } from "react-toastify";
 const { Option } = Select;
 
@@ -15,6 +19,7 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
+  const [roles, setRoles] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -62,9 +67,31 @@ const Dashboard = () => {
     }
   };
 
+  const fetchDepartmentList = async () => {
+    try {
+      const res = await getDepartmentList();
+      if (res?.status === 200) {
+        setRoles(res.data);
+      } else {
+        let message =
+          res?.response?.data?.message ||
+          res?.message ||
+          res?.error ||
+          "Something went wrong";
+        setLeaveCount({});
+        setTotalItems(0);
+        toast.error(message);
+      }
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchGetLeaveCount();
+    fetchDepartmentList();
   }, [selectedRole, currentPage, itemsPerPage]);
 
   const handleRoleChange = (value) => {
@@ -208,26 +235,23 @@ const Dashboard = () => {
   );
 };
 
-const FilterDropdown = ({ onChange }) => {
+const FilterDropdown = ({ roles, onChange }) => {
   return (
     <Select
-    defaultValue="all"
-    style={{ width: 200 }}
-    onChange={onChange}
-    showSearch
-    placeholder="Select a role"
-    optionFilterProp="children"
-    onSearch={(value) => console.log(value)} 
+      defaultValue="all"
+      style={{ width: 200 }}
+      onChange={onChange}
+      showSearch
+      placeholder="Select a role"
+      optionFilterProp="children"
+      onSearch={(value) => console.log(value)}
     >
       <Option value="all">All Roles</Option>
-      <Option value="web">Web</Option>
-      <Option value="android">Android</Option>
-      <Option value="ios">iOS</Option>
-      <Option value="python">Python</Option>
-      <Option value="backend">Backend</Option>
-      <Option value="ui/ux">UI/UX</Option>
-      <Option value="business analysis">Business Analysis</Option>
-      <Option value="hr">HR</Option>
+      {roles?.map((item) => (
+        <Option key={item.id} value={item.name}>
+          {item.name}
+        </Option>
+      ))}
     </Select>
   );
 };
